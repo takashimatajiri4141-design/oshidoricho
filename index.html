@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="おしどり帳">
+<meta name="theme-color" content="#FBF3F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#201720" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>おしどり帳</title>
+<style>
+:root {
+  --bg: #FBF3F0; --surface: #FFFFFF; --surface-2: #FDF7F5; --ink: #3A2B33;
+  --ink-soft: #93777F; --rose: #E56B93; --rose-deep: #C9527B; --rose-soft: #FBE3EC;
+  --teal: #2F8F9D; --teal-deep: #23707C; --teal-soft: #DDEFF1;
+  --sage: #4E9E80; --sage-soft: #E1F0E9; --amber: #D68A38; --amber-soft: #FBEEDC;
+  --blue: #5B8DBE; --blue-soft: #E2ECF5;
+  --line: #F0E1E5; --shadow: 0 6px 22px rgba(200,120,150,.14); --shadow-sm: 0 2px 8px rgba(200,120,150,.12);
+  --radius: 20px;
+  --font-round: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #201720; --surface: #2C2029; --surface-2: #342531; --ink: #F4E7EC;
+    --ink-soft: #B99BA8; --rose: #F384AB; --rose-deep: #F384AB; --rose-soft: #43303B;
+    --teal: #62BAC7; --teal-deep: #62BAC7; --teal-soft: #23383D;
+    --sage: #82C6A9; --sage-soft: #29392F; --amber: #E7B274; --amber-soft: #3C3020;
+    --blue: #8FB4D8; --blue-soft: #263442;
+    --line: #3D2C37; --shadow: 0 6px 22px rgba(0,0,0,.35); --shadow-sm: 0 2px 8px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #201720; --surface: #2C2029; --surface-2: #342531; --ink: #F4E7EC;
+  --ink-soft: #B99BA8; --rose: #F384AB; --rose-deep: #F384AB; --rose-soft: #43303B;
+  --teal: #62BAC7; --teal-deep: #62BAC7; --teal-soft: #23383D;
+  --sage: #82C6A9; --sage-soft: #29392F; --amber: #E7B274; --amber-soft: #3C3020;
+  --blue: #8FB4D8; --blue-soft: #263442;
+  --line: #3D2C37; --shadow: 0 6px 22px rgba(0,0,0,.35); --shadow-sm: 0 2px 8px rgba(0,0,0,.3);
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; padding: 0; background: var(--bg); }
+body {
+  font-family: var(--font-body); color: var(--ink);
+  background:
+    radial-gradient(120% 90% at 92% -8%, var(--rose-soft) 0%, transparent 52%),
+    radial-gradient(120% 90% at 2% 2%, var(--teal-soft) 0%, transparent 42%),
+    var(--bg);
+  background-attachment: fixed;
+  min-height: 100vh;
+  padding-bottom: calc(74px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing: antialiased;
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.num { font-family: var(--font-round); font-variant-numeric: tabular-nums; }
+
+/* ---- ヘッダ ---- */
+header.top {
+  position: sticky; top: 0; z-index: 40;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: calc(env(safe-area-inset-top) + 12px) 16px 10px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+}
+.brand { font-family: var(--font-round); font-weight: 800; font-size: 1.12rem; display: flex; align-items: center; gap: 7px; }
+.brand .duck { font-size: 1.3rem; }
+.menu-btn { border: none; background: var(--surface); width: 38px; height: 38px; border-radius: 12px; box-shadow: var(--shadow-sm); font-size: 1.05rem; color: var(--ink); cursor: pointer; }
+.menu-btn:active { transform: scale(.94); }
+
+/* ---- メイン ---- */
+main.wrap { max-width: 480px; margin: 0 auto; padding: 4px 16px 24px; }
+.card { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 16px; margin-bottom: 14px; }
+h2.sec { font-family: var(--font-round); font-size: .95rem; margin: 18px 2px 8px; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+.muted { color: var(--ink-soft); font-size: .78rem; }
+.grow { flex: 1; }
+
+/* ---- きろく：今日ヒーロー ---- */
+.hero { text-align: center; padding: 18px 16px 14px; }
+.hero .date { font-weight: 700; color: var(--ink-soft); font-size: .85rem; }
+.hero .stamp-big { font-size: 52px; line-height: 1.25; min-height: 66px; display: grid; place-items: center; }
+.hero .total { font-family: var(--font-round); font-weight: 800; font-size: 1.7rem; font-variant-numeric: tabular-nums; }
+.hero .word { font-size: .82rem; font-weight: 700; margin-top: 2px; }
+.chips { display: flex; gap: 8px; margin: 2px 0 14px; }
+.chip-card { flex: 1; background: var(--surface); border: none; text-align: left; border-radius: 15px; box-shadow: var(--shadow-sm); padding: 10px 12px; cursor: pointer; font-family: var(--font-body); color: var(--ink); }
+.chip-card:active { transform: scale(.98); }
+.chip-card .t { font-size: .68rem; font-weight: 700; color: var(--ink-soft); display: block; }
+.chip-card .v { font-family: var(--font-round); font-weight: 800; font-size: 1.02rem; font-variant-numeric: tabular-nums; }
+.chip-card .s { font-size: .66rem; color: var(--ink-soft); }
+.chip-card.over .v { color: var(--rose-deep); }
+
+/* ---- 入力フォーム ---- */
+.field { margin-bottom: 12px; }
+.field label { display: block; font-size: .76rem; font-weight: 700; color: var(--ink-soft); margin-bottom: 5px; }
+.field input, .field textarea {
+  width: 100%; border: 1.5px solid var(--line); background: var(--surface-2); color: var(--ink);
+  border-radius: 13px; padding: 13px 14px; font-size: 15px; font-family: var(--font-body);
+  outline: none; transition: border-color .15s ease; resize: none;
+}
+.field input:focus, .field textarea:focus { border-color: var(--rose); }
+input.amt-input { font-family: var(--font-round); font-weight: 700; font-variant-numeric: tabular-nums; font-size: 1.25rem !important; }
+.catgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+.catgrid button {
+  border: 1.5px solid var(--line); background: var(--surface-2); color: var(--ink);
+  border-radius: 12px; padding: 8px 2px 7px; cursor: pointer; font-family: var(--font-body);
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+}
+.catgrid button .e { font-size: 1.25rem; }
+.catgrid button .n { font-size: .64rem; font-weight: 700; color: var(--ink-soft); }
+.catgrid button.on { border-color: var(--rose); background: var(--rose-soft); }
+.catgrid button.on .n { color: var(--rose-deep); }
+.btn { border: none; border-radius: 14px; padding: 14px; font-size: .98rem; font-weight: 700; cursor: pointer; transition: transform .1s ease; font-family: var(--font-body); }
+.btn:active { transform: scale(.98); }
+.btn.primary { background: linear-gradient(140deg, var(--rose) 0%, var(--rose-deep) 100%); color: #fff; box-shadow: var(--shadow-sm); width: 100%; }
+.btn.ghost { background: var(--surface-2); color: var(--ink-soft); }
+.btn.del { background: none; color: #D9534F; width: 100%; margin-top: 4px; font-size: .85rem; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn.del { color: #F09B98; } }
+:root[data-theme="dark"] .btn.del { color: #F09B98; }
+.zero-btn { width: 100%; border: 1.5px dashed var(--line); background: none; color: var(--ink-soft); border-radius: 13px; padding: 11px; font-weight: 700; font-size: .85rem; cursor: pointer; font-family: var(--font-body); margin-top: 9px; }
+.zero-btn.on { border-style: solid; border-color: var(--rose); background: var(--rose-soft); color: var(--rose-deep); }
+
+/* ---- 記録リスト行 ---- */
+.entry-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--surface-2); border-radius: 12px; cursor: pointer; margin-bottom: 7px; }
+.entry-row:active { background: var(--rose-soft); }
+.entry-row .ic { width: 36px; height: 36px; border-radius: 11px; background: var(--surface); box-shadow: var(--shadow-sm); display: grid; place-items: center; font-size: 1.15rem; flex: none; }
+.entry-row .nm { font-weight: 700; font-size: .88rem; }
+.entry-row .memo { font-size: .72rem; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 160px; }
+.entry-row .amt { font-family: var(--font-round); font-weight: 800; font-variant-numeric: tabular-nums; font-size: .98rem; }
+.nostamp-tag { font-size: .6rem; font-weight: 700; color: var(--blue); background: var(--blue-soft); padding: 1px 6px; border-radius: 99px; margin-left: 5px; vertical-align: 1px; }
+
+/* ---- カレンダー ---- */
+.calbar { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 4px 0 10px; }
+.calbar .ym { font-family: var(--font-round); font-weight: 800; font-size: 1.05rem; min-width: 130px; text-align: center; }
+.calbar button { border: none; background: var(--surface); width: 34px; height: 34px; border-radius: 11px; box-shadow: var(--shadow-sm); color: var(--ink); font-size: 1rem; cursor: pointer; }
+.calbar .todaybtn { width: auto; padding: 0 12px; font-size: .74rem; font-weight: 700; color: var(--teal-deep); }
+.calgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.calgrid .wd { text-align: center; font-size: .66rem; font-weight: 700; color: var(--ink-soft); padding: 3px 0 5px; }
+.calgrid .wd.sun { color: var(--rose-deep); } .calgrid .wd.sat { color: var(--teal-deep); }
+.cell { position: relative; border: none; background: var(--surface); border-radius: 11px; min-height: 52px; padding: 3px 2px 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-family: var(--font-body); }
+.cell:active { background: var(--rose-soft); }
+.cell.blank { background: none; box-shadow: none; cursor: default; }
+.cell .d { font-size: .68rem; font-weight: 700; color: var(--ink); line-height: 1.2; }
+.cell.sun .d, .cell.hol .d { color: var(--rose-deep); }
+.cell.sat .d { color: var(--teal-deep); }
+.cell.future { opacity: .45; }
+.cell.today { outline: 2px solid var(--rose); outline-offset: -2px; }
+.cell .st { font-size: 1.05rem; line-height: 1.35; min-height: 22px; display: grid; place-items: center; font-weight: 800; }
+.cell .st.t-nijuu { color: var(--sage); } .cell .st.t-maru { color: var(--teal); } .cell .st.t-sankaku { color: var(--amber); }
+.cell .marks { position: absolute; top: 2px; right: 3px; font-size: .5rem; line-height: 1.1; display: flex; gap: 1px; }
+.cell .amt { font-size: .52rem; color: var(--ink-soft); font-family: var(--font-round); font-variant-numeric: tabular-nums; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 12px; justify-content: center; margin-top: 10px; font-size: .68rem; color: var(--ink-soft); font-weight: 700; }
+.calsum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+.calsum .b { background: var(--surface); border-radius: 13px; box-shadow: var(--shadow-sm); padding: 9px 6px; text-align: center; }
+.calsum .b .v { font-family: var(--font-round); font-weight: 800; font-size: 1.05rem; }
+.calsum .b .t { font-size: .62rem; color: var(--ink-soft); font-weight: 700; }
+
+/* ---- ふたり会議 ---- */
+.segwrap { display: flex; gap: 5px; background: var(--rose-soft); padding: 4px; border-radius: 13px; margin-bottom: 10px; }
+.segwrap button { flex: 1; border: none; background: none; border-radius: 10px; padding: 9px 2px; font-size: .78rem; font-weight: 700; color: var(--ink-soft); cursor: pointer; font-family: var(--font-body); }
+.segwrap button.on { background: var(--surface); color: var(--rose-deep); box-shadow: 0 2px 6px rgba(0,0,0,.08); }
+.periodbar { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
+.periodbar .lb { text-align: center; }
+.periodbar .lb .l1 { font-family: var(--font-round); font-weight: 800; font-size: .98rem; }
+.periodbar .lb .l2 { font-size: .68rem; color: var(--ink-soft); }
+.periodbar button { border: none; background: var(--surface); width: 32px; height: 32px; border-radius: 10px; box-shadow: var(--shadow-sm); color: var(--ink); cursor: pointer; }
+.hero2 { text-align: center; padding: 14px 16px; }
+.hero2 .big { font-family: var(--font-round); font-weight: 800; font-size: 1.9rem; font-variant-numeric: tabular-nums; }
+.hero2 .sub { font-size: .74rem; color: var(--ink-soft); font-weight: 700; }
+.hero2 .cmp { display: inline-block; margin-top: 6px; font-size: .74rem; font-weight: 700; padding: 3px 10px; border-radius: 99px; }
+.hero2 .cmp.down { background: var(--sage-soft); color: var(--sage); }
+.hero2 .cmp.up { background: var(--rose-soft); color: var(--rose-deep); }
+.hero2 .cmp.flat { background: var(--surface-2); color: var(--ink-soft); }
+.catbar-row { display: flex; align-items: center; gap: 9px; padding: 7px 0; cursor: pointer; }
+.catbar-row .e { font-size: 1.1rem; width: 24px; text-align: center; flex: none; }
+.catbar-row .meta { flex: 1; min-width: 0; }
+.catbar-row .l { display: flex; justify-content: space-between; font-size: .78rem; font-weight: 700; margin-bottom: 3px; }
+.catbar-row .l .a { font-family: var(--font-round); font-variant-numeric: tabular-nums; }
+.catbar-row .bar { height: 8px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.catbar-row .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--teal), var(--rose)); }
+.wk-row { padding: 8px 0; }
+.wk-row .l { display: flex; justify-content: space-between; align-items: baseline; font-size: .78rem; font-weight: 700; margin-bottom: 4px; }
+.wk-row .l .d { color: var(--ink-soft); font-weight: 700; font-size: .68rem; }
+.wk-row .bar { height: 12px; border-radius: 99px; background: var(--surface-2); overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,.06); }
+.wk-row .bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--sage), #6FBE9E); transition: width .5s cubic-bezier(.4,1.2,.5,1); }
+.wk-row.over .bar i { background: linear-gradient(90deg, var(--amber), var(--rose-deep)); }
+.wk-row.now { background: var(--surface-2); margin: 0 -10px; padding: 8px 10px; border-radius: 12px; }
+.stats3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stats3 .b { background: var(--surface); border-radius: 13px; box-shadow: var(--shadow-sm); padding: 10px 6px; text-align: center; }
+.stats3 .b .v { font-family: var(--font-round); font-weight: 800; font-size: 1.15rem; }
+.stats3 .b .t { font-size: .62rem; color: var(--ink-soft); font-weight: 700; }
+.top5-row { display: flex; align-items: center; gap: 9px; padding: 8px 0; border-bottom: 1px solid var(--line); cursor: pointer; }
+.top5-row:last-child { border-bottom: none; }
+.top5-row .rank { font-family: var(--font-round); font-weight: 800; color: var(--rose-deep); width: 18px; text-align: center; flex: none; }
+.empty { text-align: center; color: var(--ink-soft); padding: 26px 10px; font-size: .84rem; }
+.empty .e { font-size: 38px; margin-bottom: 6px; }
+
+/* ---- ボトムタブ ---- */
+nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; max-width: 480px; margin: 0 auto; padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); background: color-mix(in srgb, var(--bg) 84%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-radius: 18px 18px 0 0; }
+nav.tabs button { flex: 1; background: none; border: none; color: var(--ink-soft); font-size: 10px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 5px 0; cursor: pointer; font-family: var(--font-body); }
+nav.tabs button .ic { font-size: 21px; }
+nav.tabs button.act { color: var(--rose-deep); }
+
+/* ---- シート・スクリム ---- */
+#modalRoot .modal { position: fixed; inset: 0; z-index: 60; background: rgba(40,25,35,.45); -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px); display: flex; align-items: flex-end; justify-content: center; }
+#modalRoot .sheet { background: var(--surface); width: 100%; max-width: 480px; border-radius: 24px 24px 0 0; padding: 10px 20px calc(24px + env(safe-area-inset-bottom)); max-height: 88vh; overflow-y: auto; animation: up .25s; box-shadow: 0 -8px 30px rgba(0,0,0,.18); }
+@keyframes up { from { transform: translateY(30px); opacity: .5; } to { transform: none; opacity: 1; } }
+.sheet .grip { width: 40px; height: 5px; border-radius: 99px; background: var(--line); margin: 4px auto 14px; }
+.sheet h3 { font-family: var(--font-round); font-size: 1.02rem; margin: 0 0 12px; }
+.sheet-actions { display: flex; gap: 9px; margin-top: 6px; }
+.sheet-actions .btn.primary { flex: 1; width: auto; }
+.sheet-actions .btn.ghost { flex: 0 0 auto; padding: 14px 18px; }
+
+/* ---- 右スライドページ ---- */
+.slide { position: fixed; top: 0; right: 0; bottom: 0; width: 100%; max-width: 480px; z-index: 48; background: var(--bg); transform: translateX(100%); transition: transform .3s cubic-bezier(.3,1,.4,1); overflow-y: auto; padding: calc(16px + env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom)); box-shadow: -8px 0 30px rgba(0,0,0,.15); left: auto; margin: 0 auto; }
+@media (min-width: 481px) { .slide { right: calc((100vw - 480px) / 2); } }
+.slide.show { transform: translateX(0); }
+.slide-scrim { position: fixed; inset: 0; background: rgba(40,25,35,.35); opacity: 0; pointer-events: none; transition: opacity .25s ease; z-index: 45; }
+.slide-scrim.show { opacity: 1; pointer-events: auto; }
+.slide .head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.slide .head button { border: none; background: var(--surface); border-radius: 11px; padding: 8px 13px; font-weight: 700; color: var(--ink); box-shadow: var(--shadow-sm); cursor: pointer; font-size: .84rem; }
+.slide .head h2 { font-family: var(--font-round); font-size: 1.05rem; margin: 0; }
+.set-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.set-row:last-child { border-bottom: none; }
+.set-row .lbl { flex: 1; font-size: .86rem; font-weight: 700; }
+.set-row .lbl small { display: block; font-weight: 400; color: var(--ink-soft); font-size: .68rem; margin-top: 1px; }
+.set-row input.mini { width: 108px; border: 1.5px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 11px; padding: 9px 10px; font-size: 15px; text-align: right; font-family: var(--font-round); font-weight: 700; outline: none; }
+.set-row input.mini:focus { border-color: var(--rose); }
+.set-row select { border: 1.5px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 11px; padding: 9px 8px; font-size: 15px; font-family: var(--font-body); font-weight: 700; outline: none; }
+.cat-edit-row { display: flex; align-items: center; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.cat-edit-row:last-child { border-bottom: none; }
+.cat-edit-row .ic { width: 34px; height: 34px; border-radius: 10px; background: var(--surface-2); display: grid; place-items: center; font-size: 1.1rem; flex: none; cursor: pointer; }
+.cat-edit-row .nm { flex: 1; font-weight: 700; font-size: .86rem; min-width: 0; cursor: pointer; }
+.cat-edit-row .tags { display: flex; gap: 3px; flex-wrap: wrap; }
+.mini-tag { font-size: .58rem; font-weight: 700; padding: 2px 6px; border-radius: 99px; }
+.mini-tag.food { background: var(--amber-soft); color: var(--amber); }
+.mini-tag.nostamp { background: var(--blue-soft); color: var(--blue); }
+.mini-tag.hidden { background: var(--surface-2); color: var(--ink-soft); }
+.arrow-btn { border: none; background: var(--surface-2); border-radius: 8px; width: 27px; height: 27px; color: var(--ink-soft); cursor: pointer; font-size: .72rem; }
+.add-dash { width: 100%; border: 1.5px dashed var(--line); background: none; color: var(--ink-soft); border-radius: 12px; padding: 11px; font-weight: 700; font-size: .84rem; cursor: pointer; font-family: var(--font-body); margin-top: 9px; }
+.switch { display: flex; align-items: center; gap: 12px; cursor: pointer; user-select: none; -webkit-user-select: none; padding: 10px 0; }
+.switch .track { width: 48px; height: 28px; border-radius: 99px; background: var(--line); position: relative; transition: background .2s ease; flex: none; }
+.switch.on .track { background: var(--teal); }
+.switch .knob { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 99px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: left .2s ease; }
+.switch.on .knob { left: 23px; }
+.switch .lbl { font-size: .84rem; font-weight: 700; }
+.switch .lbl small { display: block; font-weight: 400; color: var(--ink-soft); font-size: .68rem; }
+textarea.io { width: 100%; height: 130px; border: 1.5px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 12px; padding: 11px; font-size: 12px; font-family: Consolas, monospace; outline: none; resize: none; }
+.emoji-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 8px; }
+.emoji-grid button { border: 1.5px solid var(--line); background: var(--surface-2); border-radius: 10px; font-size: 1.3rem; padding: 7px 0; cursor: pointer; }
+.emoji-grid button.on { border-color: var(--rose); background: var(--rose-soft); }
+
+/* ---- トースト・バナー ---- */
+.toast { position: fixed; top: calc(env(safe-area-inset-top) + 14px); left: 50%; transform: translateX(-50%) translateY(-80px); z-index: 90; background: var(--ink); color: var(--bg); font-size: .82rem; font-weight: 700; padding: 10px 18px; border-radius: 99px; box-shadow: 0 6px 20px rgba(0,0,0,.25); transition: transform .3s cubic-bezier(.3,1.2,.4,1); white-space: nowrap; }
+.toast.show { transform: translateX(-50%) translateY(0); }
+.banner { display: flex; align-items: center; gap: 9px; background: var(--amber-soft); color: var(--amber); border-radius: 13px; padding: 10px 13px; font-size: .78rem; font-weight: 700; margin-bottom: 12px; cursor: pointer; border: none; width: 100%; text-align: left; font-family: var(--font-body); }
+.helpbox p { font-size: .84rem; line-height: 1.75; margin: 6px 0; }
+.helpbox h3 { font-family: var(--font-round); font-size: .92rem; margin: 16px 0 4px; }
+.stamp-sample { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: .84rem; }
+.stamp-sample .s { font-size: 1.25rem; width: 30px; text-align: center; font-weight: 800; }
+.menu-row { width: 100%; border: none; background: var(--surface-2); border-radius: 14px; padding: 15px 16px; margin-bottom: 9px; display: flex; align-items: center; gap: 13px; cursor: pointer; font-family: var(--font-body); font-weight: 700; font-size: 1rem; color: var(--ink); }
+.menu-row:active { transform: scale(.98); }
+.menu-row .mi { width: 36px; height: 36px; border-radius: 11px; background: var(--surface); display: grid; place-items: center; flex: none; box-shadow: var(--shadow-sm); font-size: 1.1rem; }
+.menu-row .mc { margin-left: auto; color: var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="duck">🦆</span>おしどり帳</div>
+  <button class="menu-btn" id="menuBtn" aria-label="メニュー">☰</button>
+</header>
+
+<main class="wrap" id="view"></main>
+
+<nav class="tabs" id="nav"></nav>
+<div id="modalRoot"></div>
+
+<!-- 設定（右スライド） -->
+<div class="slide-scrim" id="setScrim"></div>
+<div class="slide" id="setPage">
+  <div class="head"><button id="setBack">‹ もどる</button><h2>⚙️ 設定</h2></div>
+  <div id="setBody"></div>
+</div>
+
+<!-- データ（右スライド） -->
+<div class="slide-scrim" id="dataScrim"></div>
+<div class="slide" id="dataPage">
+  <div class="head"><button id="dataBack">‹ もどる</button><h2>📦 データの保存・引っこし</h2></div>
+  <div id="dataBody"></div>
+</div>
+
+<!-- つかいかた（右スライド） -->
+<div class="slide-scrim" id="helpScrim"></div>
+<div class="slide" id="helpPage">
+  <div class="head"><button id="helpBack">‹ もどる</button><h2>❓ つかいかた</h2></div>
+  <div id="helpBody" class="helpbox"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* =====================================================
+   おしどり帳 — 毎日の出費を記録して節約をたのしむ習慣カレンダー
+   データはこのiPhoneの中（localStorage）だけに保存されます。
+   ===================================================== */
+
+/* ---------- 小道具 ---------- */
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+var comma = function (n) { return (n || 0).toLocaleString("ja-JP"); };
+var yen = function (n) { return "¥" + (n || 0).toLocaleString("ja-JP"); };
+function parseAmt(v) { var n = parseInt(String(v).replace(/[^0-9]/g, ""), 10); return isNaN(n) ? 0 : n; }
+function uid() {
+  try { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); } catch (e) {}
+  uid._c = (uid._c || 0) + 1;
+  return "id-" + Date.now().toString(36) + "-" + Math.floor(Math.random() * 1e12).toString(36) + "-" + uid._c;
+}
+var toastTimer = null;
+function toast(msg) {
+  var t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove("show"); }, 1800);
+}
+
+/* ---------- 日付ユーティリティ ---------- */
+function pad2(n) { return String(n).padStart(2, "0"); }
+function ymd(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+function fromYmd(s) { var p = s.split("-"); return new Date(+p[0], +p[1] - 1, +p[2]); }
+function addDays(d, n) { var x = new Date(d.getFullYear(), d.getMonth(), d.getDate()); x.setDate(x.getDate() + n); return x; }
+function diffDays(a, b) {
+  var ua = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
+  var ub = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
+  return Math.round((ub - ua) / 86400000);
+}
+function today() { var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+var WD = ["日", "月", "火", "水", "木", "金", "土"];
+function jdate(s) { var d = fromYmd(s); return (d.getMonth() + 1) + "/" + d.getDate() + "(" + WD[d.getDay()] + ")"; }
+function jdateLong(s) { var d = fromYmd(s); return d.getFullYear() + "年" + (d.getMonth() + 1) + "月" + d.getDate() + "日(" + WD[d.getDay()] + ")"; }
+
+/* ---------- 日本の祝日（2020〜2099） ---------- */
+var _holidayCache = {};
+function nthMonday(year, month, nth) {
+  var d = new Date(year, month - 1, 1);
+  var offset = (8 - d.getDay()) % 7;
+  return new Date(year, month - 1, 1 + offset + (nth - 1) * 7);
+}
+function shunbunDay(y) { return Math.floor(20.8431 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4)); }
+function shubunDay(y) { return Math.floor(23.2488 + 0.242194 * (y - 1980) - Math.floor((y - 1980) / 4)); }
+function jpHolidays(year) {
+  if (_holidayCache[year]) return _holidayCache[year];
+  var base = {};
+  function set(m, d, name) { base[year + "-" + pad2(m) + "-" + pad2(d)] = name; }
+  set(1, 1, "元日");
+  base[ymd(nthMonday(year, 1, 2))] = "成人の日";
+  set(2, 11, "建国記念の日");
+  if (year >= 2020) set(2, 23, "天皇誕生日");
+  set(3, shunbunDay(year), "春分の日");
+  set(4, 29, "昭和の日");
+  set(5, 3, "憲法記念日"); set(5, 4, "みどりの日"); set(5, 5, "こどもの日");
+  base[ymd(nthMonday(year, 7, 3))] = "海の日";
+  set(8, 11, "山の日");
+  base[ymd(nthMonday(year, 9, 3))] = "敬老の日";
+  set(9, shubunDay(year), "秋分の日");
+  base[ymd(nthMonday(year, 10, 2))] = "スポーツの日";
+  set(11, 3, "文化の日"); set(11, 23, "勤労感謝の日");
+  var all = {}; Object.keys(base).forEach(function (k) { all[k] = base[k]; });
+  Object.keys(base).forEach(function (k) {
+    var d = fromYmd(k);
+    if (d.getDay() === 0) {
+      var t = addDays(d, 1);
+      while (base[ymd(t)]) t = addDays(t, 1);
+      all[ymd(t)] = "振替休日";
+    }
+  });
+  Object.keys(base).forEach(function (k) {
+    var d = fromYmd(k);
+    var mid = addDays(d, 1), next = addDays(d, 2);
+    if (base[ymd(next)] && !all[ymd(mid)] && mid.getDay() !== 0) all[ymd(mid)] = "国民の休日";
+  });
+  _holidayCache[year] = all;
+  return all;
+}
+function isHoliday(d) { return !!jpHolidays(d.getFullYear())[ymd(d)]; }
+function isWeekend(d) { return d.getDay() === 0 || d.getDay() === 6; }
+
+/* ---------- 食費週・クレカ締め期間 ---------- */
+function foodAnchor(year, month, anchorDay) {
+  var lastDay = new Date(year, month, 0).getDate();
+  var d = new Date(year, month - 1, Math.min(anchorDay, lastDay));
+  while (isWeekend(d) || isHoliday(d)) d = addDays(d, -1);
+  return d;
+}
+// 起点日が小さいと「翌月の起点」が前倒しで当月内に食い込むため、
+// アンカー列（単調増加）を走査して anchor(k) <= date < anchor(k+1) を満たす区間を取る
+function foodPeriod(date, anchorDay) {
+  var mi = date.getFullYear() * 12 + date.getMonth();
+  function A(k) { return foodAnchor(Math.floor(k / 12), (k % 12) + 1, anchorDay); }
+  var k = mi + 1;
+  while (diffDays(A(k), date) < 0) k--;
+  while (diffDays(A(k + 1), date) >= 0) k++;
+  var start = A(k);
+  var end = addDays(A(k + 1), -1);
+  var weeks = [];
+  var s = start, idx = 1;
+  while (diffDays(s, end) >= 0) {
+    var e = addDays(s, 6);
+    if (diffDays(e, end) < 0) e = end;
+    weeks.push({ idx: idx, start: s, end: e, days: diffDays(s, e) + 1, partial: diffDays(s, e) + 1 !== 7 });
+    s = addDays(e, 1); idx++;
+  }
+  return { start: start, end: end, weeks: weeks };
+}
+function foodWeekOf(date, anchorDay) {
+  var p = foodPeriod(date, anchorDay);
+  for (var i = 0; i < p.weeks.length; i++) {
+    var w = p.weeks[i];
+    if (diffDays(w.start, date) >= 0 && diffDays(date, w.end) >= 0) return { period: p, week: w };
+  }
+  return { period: p, week: null };
+}
+function cardPeriod(date, closeDay) {
+  var y = date.getFullYear(), m = date.getMonth() + 1;
+  function closeOf(yy, mm) {
+    var last = new Date(yy, mm, 0).getDate();
+    return new Date(yy, mm - 1, Math.min(closeDay, last));
+  }
+  var thisClose = closeOf(y, m);
+  var cy = y, cm = m;
+  if (diffDays(date, thisClose) < 0) { cm++; if (cm === 13) { cm = 1; cy++; } }
+  var close = closeOf(cy, cm);
+  var pm = cm - 1, py = cy; if (pm === 0) { pm = 12; py--; }
+  var start = addDays(closeOf(py, pm), 1);
+  return { start: start, end: close, label: cy + "年" + cm + "月締め" };
+}
+
+/* ---------- 状態 ---------- */
+var KEY = "oshidori_cho_v1";
+function defaultCats() {
+  return [
+    { id: "food",   name: "食費",   emoji: "🍚", countStamp: true,  isFood: true,  hidden: false },
+    { id: "eatout", name: "外食",   emoji: "🍽️", countStamp: true,  isFood: true,  hidden: false },
+    { id: "daily",  name: "日用品", emoji: "🧺", countStamp: true,  isFood: false, hidden: false },
+    { id: "gift",   name: "交際費", emoji: "🎁", countStamp: true,  isFood: false, hidden: false },
+    { id: "fun",    name: "たのしみ", emoji: "🎮", countStamp: true, isFood: false, hidden: false },
+    { id: "trans",  name: "交通",   emoji: "🚃", countStamp: true,  isFood: false, hidden: false },
+    { id: "med",    name: "医療",   emoji: "🏥", countStamp: false, isFood: false, hidden: false },
+    { id: "other",  name: "そのほか", emoji: "💰", countStamp: true, isFood: false, hidden: false }
+  ];
+}
+function blank() {
+  return {
+    version: 1,
+    entries: [],
+    zeroDays: [],
+    cats: defaultCats(),
+    settings: { thresholds: [1000, 2000, 5000], foodBudget: 0, cardCloseDay: 15, foodAnchorDay: 25 },
+    created: new Date().toISOString()
+  };
+}
+function isRealDate(s) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  return ymd(fromYmd(s)) === s; // 2026-02-30 のような形だけの日付を弾く
+}
+function migrate(d) {
+  if (!d || typeof d !== "object") return blank();
+  var b = blank();
+  if (!d.version) d.version = 1;
+  if (!Array.isArray(d.entries)) d.entries = [];
+  if (!Array.isArray(d.zeroDays)) d.zeroDays = [];
+  if (!Array.isArray(d.cats)) d.cats = b.cats;
+  d.cats = d.cats.filter(function (c) { return c && typeof c === "object"; });
+  if (!d.cats.length) d.cats = b.cats;
+  if (!d.settings || typeof d.settings !== "object") d.settings = b.settings;
+  var s = d.settings;
+  if (!Array.isArray(s.thresholds) || s.thresholds.length !== 3) s.thresholds = b.settings.thresholds;
+  s.thresholds = s.thresholds.map(function (x) { return Math.max(0, parseAmt(x)); });
+  if (typeof s.foodBudget !== "number" || s.foodBudget < 0) s.foodBudget = 0;
+  if (!(s.cardCloseDay >= 1 && s.cardCloseDay <= 31)) s.cardCloseDay = 15;
+  if (!(s.foodAnchorDay >= 1 && s.foodAnchorDay <= 31)) s.foodAnchorDay = 25;
+  // ID検疫: onclick属性等に埋め込むため英数・ハイフン・アンダースコアのみ許可
+  function idOk(s) { return typeof s === "string" && /^[A-Za-z0-9_-]+$/.test(s); }
+  // カテゴリの正規化＋不正IDの振り直し（entriesの参照も追従）
+  var cseen = {}, remap = {};
+  d.cats.forEach(function (c) {
+    if (!idOk(c.id) || cseen[c.id]) {
+      var nid = uid();
+      // remapは「不正な文字のID」の付け替えだけ（重複IDは先勝ち＝正規側からentriesを奪わない）
+      if (typeof c.id === "string" && c.id && !idOk(c.id)) remap[c.id] = nid;
+      c.id = nid;
+    }
+    cseen[c.id] = 1;
+    if (typeof c.name !== "string" || !c.name) c.name = "？";
+    if (typeof c.emoji !== "string" || !c.emoji) c.emoji = "💰";
+    if (typeof c.countStamp !== "boolean") c.countStamp = true;
+    if (typeof c.isFood !== "boolean") c.isFood = false;
+    if (typeof c.hidden !== "boolean") c.hidden = false;
+  });
+  // エントリの防御的正規化＋ID修復
+  var seen = {};
+  d.entries = d.entries.filter(function (e) { return e && typeof e === "object" && isRealDate(e.date || ""); });
+  d.entries.forEach(function (e) {
+    if (!idOk(e.id) || seen[e.id]) e.id = uid();
+    seen[e.id] = 1;
+    e.amount = Math.max(0, parseAmt(e.amount));
+    if (typeof e.memo !== "string") e.memo = "";
+    if (remap[e.catId]) e.catId = remap[e.catId];
+    if (!idOk(e.catId)) e.catId = "other";
+    if (!e.createdAt) e.createdAt = new Date().toISOString();
+  });
+  // 0円デーの検疫
+  d.zeroDays = d.zeroDays.filter(function (s) { return typeof s === "string" && isRealDate(s); });
+  if (typeof s.lastExportAt !== "string") s.lastExportAt = "";
+  return d;
+}
+var DB, _loadFailed = false;
+try {
+  var _raw = localStorage.getItem(KEY);
+  DB = migrate(_raw ? JSON.parse(_raw) : null);
+} catch (e) {
+  // 読めなかった元データは消さずに退避（手作業で救える余地を残す）
+  try { localStorage.setItem(KEY + "_broken", localStorage.getItem(KEY) || ""); } catch (e2) {}
+  _loadFailed = true;
+  DB = blank();
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(DB)); return true; }
+  catch (e) {
+    toast("⚠️ 保存できませんでした（空き容量・プライベートモードを確認してね）");
+    return false;
+  }
+}
+save(); // ロード時の修復・移行を確実に書き戻す
+
+function catById(id) {
+  for (var i = 0; i < DB.cats.length; i++) if (DB.cats[i].id === id) return DB.cats[i];
+  return { id: id, name: "（削除済み）", emoji: "❔", countStamp: true, isFood: false, hidden: true };
+}
+
+/* ---------- 集計コア ---------- */
+function entriesOf(dateStr) {
+  return DB.entries.filter(function (e) { return e.date === dateStr; });
+}
+function entriesBetween(a, b) { // Date, Date（両端含む）
+  var sa = ymd(a), sb = ymd(b);
+  return DB.entries.filter(function (e) { return e.date >= sa && e.date <= sb; });
+}
+function dayInfo(dateStr) {
+  var list = entriesOf(dateStr);
+  var total = 0, counted = 0;
+  list.forEach(function (e) {
+    total += e.amount;
+    if (catById(e.catId).countStamp) counted += e.amount;
+  });
+  var recorded = list.length > 0 || DB.zeroDays.indexOf(dateStr) >= 0;
+  var t = DB.settings.thresholds;
+  var stamp = null;
+  if (recorded) {
+    if (counted === 0) stamp = "hanamaru";
+    else if (counted <= t[0]) stamp = "nijuu";
+    else if (counted <= t[1]) stamp = "maru";
+    else if (counted <= t[2]) stamp = "sankaku";
+    else stamp = "shizuku";
+  }
+  return { list: list, total: total, counted: counted, recorded: recorded, stamp: stamp };
+}
+var STAMP = {
+  hanamaru: { ch: "💮", cls: "t-hana", name: "花丸", word: "0円デー！すばらしい💮" },
+  nijuu:    { ch: "◎",  cls: "t-nijuu", name: "◎", word: "きょうは上手にやりくり◎" },
+  maru:     { ch: "○",  cls: "t-maru", name: "○", word: "いいかんじ○" },
+  sankaku:  { ch: "△",  cls: "t-sankaku", name: "△", word: "ちょっとお財布ゆるめ△" },
+  shizuku:  { ch: "💦", cls: "t-shizuku", name: "💦", word: "きょうはがんばった日…！" }
+};
+function stampHtml(stamp, cls) {
+  if (!stamp) return "";
+  var s = STAMP[stamp];
+  return '<span class="' + (cls || "") + " " + s.cls + '">' + s.ch + "</span>";
+}
+function stampWord(info) { // 判定外の出費だけの日は「0円」と言わない
+  if (!info.stamp) return "";
+  if (info.stamp === "hanamaru" && info.total > 0) return "仕方ない出費だけの日。花丸キープ💮";
+  return STAMP[info.stamp].word;
+}
+function streak() { // 連続記録日数（今日つけていなければ昨日から数える）
+  var n = 0, d = today();
+  if (!dayInfo(ymd(d)).recorded) d = addDays(d, -1);
+  while (dayInfo(ymd(d)).recorded) { n++; d = addDays(d, -1); if (n > 3650) break; }
+  return n;
+}
+function foodSpent(a, b) { // 期間の食費（isFoodカテゴリ）
+  var sum = 0;
+  entriesBetween(a, b).forEach(function (e) { if (catById(e.catId).isFood) sum += e.amount; });
+  return sum;
+}
+function totalBetween(a, b) {
+  var sum = 0;
+  entriesBetween(a, b).forEach(function (e) { sum += e.amount; });
+  return sum;
+}
+
+/* ---------- タブ・描画 ---------- */
+var TAB = "record";
+var TABS = [["record", "✍️", "きろく"], ["cal", "📅", "カレンダー"], ["meet", "📊", "ふたり会議"]];
+var CAL_Y, CAL_M; // カレンダー表示中の年月
+(function () { var t = today(); CAL_Y = t.getFullYear(); CAL_M = t.getMonth() + 1; })();
+var MEET_MODE = "card"; // card | food | month
+var MEET_REF = today(); // 期間内の基準日
+var selCatId = "food";  // きろく画面で選択中のカテゴリ
+
+function render() {
+  renderNav();
+  var v = $("view");
+  if (TAB === "record") v.innerHTML = viewRecord();
+  else if (TAB === "cal") v.innerHTML = viewCal();
+  else v.innerHTML = viewMeet();
+  if (TAB === "record") wireRecordForm();
+  window.scrollTo(0, 0);
+}
+function renderNav() {
+  $("nav").innerHTML = TABS.map(function (t) {
+    return '<button class="' + (TAB === t[0] ? "act" : "") + '" onclick="go(\'' + t[0] + '\')"><span class="ic">' + t[1] + "</span>" + t[2] + "</button>";
+  }).join("");
+}
+function go(t) { TAB = t; render(); }
+
+/* ---------- きろく ---------- */
+function viewRecord() {
+  var td = ymd(today());
+  var info = dayInfo(td);
+  var st = DB.settings;
+  // 選択中カテゴリが消えた・非表示になったときは先頭の表示カテゴリへ
+  var vis = visibleCats();
+  if (!vis.some(function (c) { return c.id === selCatId; })) selCatId = vis[0].id;
+  var h = "";
+
+  // つけ忘れバナー（きのう未記録のとき）
+  var yd = ymd(addDays(today(), -1));
+  if (!dayInfo(yd).recorded && DB.entries.length > 0) {
+    h += '<button class="banner" onclick="openDaySheet(\'' + yd + '\')">🔔 きのう（' + jdate(yd) + '）の記録がまだです。タップして記入 ›</button>';
+  }
+  // バックアップ促しバナー（記録が30件をこえて、30日以上書き出していないとき）
+  if (DB.entries.length >= 30) {
+    var lastEx = st.lastExportAt ? new Date(st.lastExportAt) : null;
+    if (!lastEx || (Date.now() - lastEx.getTime()) > 30 * 86400000) {
+      h += '<button class="banner" onclick="openData()">💾 記録がたまってきました。ときどき「書き出す」で控えを取っておくと安心 ›</button>';
+    }
+  }
+
+  // 今日ヒーロー
+  h += '<div class="card hero">';
+  h += '<div class="date">' + jdateLong(td) + "</div>";
+  h += '<div class="stamp-big">' + (info.stamp ? stampHtml(info.stamp) : '<span style="font-size:.95rem;color:var(--ink-soft);font-weight:700">きょうの記録はまだ</span>') + "</div>";
+  h += '<div class="total num">' + yen(info.total) + "</div>";
+  if (info.stamp) h += '<div class="word">' + stampWord(info) + "</div>";
+  var sk = streak();
+  if (sk >= 2) h += '<div class="muted" style="margin-top:6px">🔥 ' + sk + "日連続で記録中</div>";
+  h += "</div>";
+
+  // 現況チップ
+  var fw = foodWeekOf(today(), st.foodAnchorDay);
+  var cp = cardPeriod(today(), st.cardCloseDay);
+  var cpTotal = totalBetween(cp.start, cp.end < today() ? cp.end : today());
+  h += '<div class="chips">';
+  if (fw.week) {
+    var wSpent = foodSpent(fw.week.start, fw.week.end);
+    if (st.foodBudget > 0) {
+      var left = st.foodBudget - wSpent;
+      h += '<button class="chip-card' + (left < 0 ? " over" : "") + '" onclick="go(\'meet\');MEET_MODE=\'food\';MEET_REF=today();render()">' +
+        '<span class="t">🍚 今週の食費のこり</span><span class="v num">' + (left < 0 ? "−" : "") + yen(Math.abs(left)) + "</span>" +
+        '<span class="s">' + jdate(ymd(fw.week.start)) + "〜" + jdate(ymd(fw.week.end)) + "</span></button>";
+    } else {
+      h += '<button class="chip-card" onclick="openSettings()"><span class="t">🍚 今週の食費</span><span class="v num">' + yen(wSpent) + '</span><span class="s">予算は設定から決められます</span></button>';
+    }
+  }
+  var closeLeft = diffDays(today(), cp.end);
+  h += '<button class="chip-card" onclick="go(\'meet\');MEET_MODE=\'card\';MEET_REF=today();render()">' +
+    '<span class="t">💳 ' + cp.label + "</span><span class=\"v num\">" + yen(cpTotal) + "</span>" +
+    '<span class="s">' + (closeLeft === 0 ? "きょうが締め日！" : "締め日まであと" + closeLeft + "日") + "</span></button>";
+  h += "</div>";
+
+  // クイック入力
+  h += '<div class="card">';
+  h += '<div class="field"><label>きょう使った金額</label><input type="text" id="qAmt" class="amt-input" inputmode="numeric" placeholder="0" autocomplete="off"></div>';
+  h += '<div class="field"><label>なにに使った？</label><div class="catgrid" id="qCats">' + catChips(selCatId, "pickCat") + "</div></div>";
+  h += '<div class="field"><label>メモ（任意）</label><input type="text" id="qMemo" placeholder="例）スーパーで買い出し" autocomplete="off"></div>';
+  h += '<button class="btn primary" onclick="quickAdd()">きろくする</button>';
+  var isZero = DB.zeroDays.indexOf(td) >= 0;
+  h += '<button class="zero-btn' + (isZero ? " on" : "") + '" onclick="toggleZeroDay(\'' + td + '\')">' + (isZero ? "💮 きょうは0円デー！（取り消す）" : "💮 きょうは何も使わなかった（0円デー）") + "</button>";
+  h += "</div>";
+
+  // 今日の記録リスト
+  if (info.list.length) {
+    h += '<h2 class="sec">きょうの記録</h2>';
+    info.list.slice().reverse().forEach(function (e) { h += entryRowHtml(e); });
+  }
+  return h;
+}
+function visibleCats() {
+  var v = DB.cats.filter(function (c) { return !c.hidden; });
+  return v.length ? v : DB.cats;
+}
+function catChips(sel, fn) {
+  return visibleCats().map(function (c) {
+    return '<button type="button" class="' + (sel === c.id ? "on" : "") + '" onclick="' + fn + "('" + c.id + "')\"><span class=\"e\">" + esc(c.emoji) + '</span><span class="n">' + esc(c.name) + "</span></button>";
+  }).join("");
+}
+function pickCat(id) {
+  // 入力途中の金額・メモを消さないため、カテゴリグリッドだけ差し替える
+  selCatId = id;
+  var g = $("qCats");
+  if (g) g.innerHTML = catChips(selCatId, "pickCat"); else render();
+}
+function wireRecordForm() {
+  var el = $("qAmt");
+  if (el) el.addEventListener("input", function () { var n = parseAmt(this.value); this.value = n ? comma(n) : ""; });
+}
+function entryRowHtml(e) {
+  var c = catById(e.catId);
+  return '<div class="entry-row" onclick="openEntrySheet(\'' + e.id + '\')">' +
+    '<div class="ic">' + esc(c.emoji) + "</div>" +
+    '<div class="grow"><div class="nm">' + esc(c.name) + (c.countStamp ? "" : '<span class="nostamp-tag">判定外</span>') + "</div>" +
+    (e.memo ? '<div class="memo">' + esc(e.memo) + "</div>" : "") + "</div>" +
+    '<div class="amt num">' + yen(e.amount) + "</div></div>";
+}
+function removeZeroMark(dateStr) { // 支出がついた日は0円デーの印を自動で外す
+  var i = DB.zeroDays.indexOf(dateStr);
+  if (i >= 0) DB.zeroDays.splice(i, 1);
+}
+function quickAdd() {
+  var amt = parseAmt($("qAmt").value);
+  if (!amt) { toast("金額を入れてね"); return; }
+  var memo = $("qMemo").value.trim();
+  var td = ymd(today());
+  DB.entries.push({ id: uid(), date: td, amount: amt, catId: selCatId, memo: memo, createdAt: new Date().toISOString() });
+  removeZeroMark(td);
+  var okSave = save();
+  document.activeElement && document.activeElement.blur();
+  if (okSave) {
+    var info = dayInfo(td);
+    toast(info.stamp === "shizuku" ? "きろくしました" : "きろくしました🌸");
+  }
+  render();
+}
+function toggleZeroDay(dateStr) {
+  var i = DB.zeroDays.indexOf(dateStr);
+  var turnedOn = false;
+  if (i >= 0) DB.zeroDays.splice(i, 1);
+  else { DB.zeroDays.push(dateStr); turnedOn = true; }
+  var okSave = save();
+  // きろく画面の入力途中を消さないように退避して復元
+  var amtV = $("qAmt") ? $("qAmt").value : null;
+  var memoV = $("qMemo") ? $("qMemo").value : null;
+  render();
+  if (amtV !== null && $("qAmt")) $("qAmt").value = amtV;
+  if (memoV !== null && $("qMemo")) $("qMemo").value = memoV;
+  if (okSave && turnedOn) toast("0円デー！えらい💮");
+  if (sheetDate === dateStr && $("daySheetBody")) refreshDaySheet();
+}
+
+/* ---------- カレンダー ---------- */
+function viewCal() {
+  var st = DB.settings;
+  var first = new Date(CAL_Y, CAL_M - 1, 1);
+  var daysInMonth = new Date(CAL_Y, CAL_M, 0).getDate();
+  var lead = first.getDay();
+  var td = ymd(today());
+  var hols = jpHolidays(CAL_Y);
+  // 🍚マーク: この月に実際に落ちる起点日（前倒しで前月へ食い込んだ翌月分も拾う）
+  var anchorSet = {};
+  [[CAL_Y, CAL_M], CAL_M === 12 ? [CAL_Y + 1, 1] : [CAL_Y, CAL_M + 1]].forEach(function (p2) {
+    var a = foodAnchor(p2[0], p2[1], st.foodAnchorDay);
+    if (a.getFullYear() === CAL_Y && a.getMonth() + 1 === CAL_M) anchorSet[ymd(a)] = 1;
+  });
+  // 💳マーク: 月末より大きい締め日は月末に丸める（期間計算と同じ扱い）
+  var effCloseDay = Math.min(st.cardCloseDay, daysInMonth);
+
+  var h = '<div class="calbar">' +
+    '<button onclick="calShift(-1)" aria-label="前の月">‹</button>' +
+    '<div class="ym num">' + CAL_Y + "年" + CAL_M + "月</div>" +
+    '<button onclick="calShift(1)" aria-label="次の月">›</button>' +
+    '<button class="todaybtn" onclick="calToday()">今日</button></div>';
+
+  // 月サマリ
+  var hana = 0, niju = 0, rec = 0, mTotal = 0;
+  for (var d = 1; d <= daysInMonth; d++) {
+    var ds = CAL_Y + "-" + pad2(CAL_M) + "-" + pad2(d);
+    var inf = dayInfo(ds);
+    if (inf.stamp === "hanamaru") hana++;
+    if (inf.stamp === "nijuu") niju++;
+    if (inf.recorded) rec++;
+    mTotal += inf.total;
+  }
+  h += '<div class="calsum">' +
+    '<div class="b"><div class="v">💮' + hana + '</div><div class="t">花丸の日</div></div>' +
+    '<div class="b"><div class="v" style="color:var(--sage)">◎' + niju + '</div><div class="t">じょうずな日</div></div>' +
+    '<div class="b"><div class="v num">' + yen(mTotal) + '</div><div class="t">この月の合計</div></div></div>';
+
+  h += '<div class="card" style="padding:12px 8px"><div class="calgrid">';
+  WD.forEach(function (w, i) {
+    h += '<div class="wd' + (i === 0 ? " sun" : i === 6 ? " sat" : "") + '">' + w + "</div>";
+  });
+  for (var b = 0; b < lead; b++) h += '<div class="cell blank"></div>';
+  for (d = 1; d <= daysInMonth; d++) {
+    var ds2 = CAL_Y + "-" + pad2(CAL_M) + "-" + pad2(d);
+    var dt = new Date(CAL_Y, CAL_M - 1, d);
+    var inf2 = dayInfo(ds2);
+    var cls = "cell";
+    if (dt.getDay() === 0) cls += " sun"; else if (dt.getDay() === 6) cls += " sat";
+    if (hols[ds2]) cls += " hol";
+    if (ds2 === td) cls += " today";
+    if (ds2 > td) cls += " future";
+    var marks = "";
+    if (d === effCloseDay) marks += "💳";
+    if (anchorSet[ds2]) marks += "🍚";
+    h += '<button class="' + cls + '" onclick="openDaySheet(\'' + ds2 + '\')">' +
+      '<span class="d">' + d + "</span>" +
+      (marks ? '<span class="marks">' + marks + "</span>" : "") +
+      '<span class="st">' + (inf2.stamp ? stampHtml(inf2.stamp) : "") + "</span>" +
+      (inf2.total > 0 ? '<span class="amt">' + comma(inf2.total) + "</span>" : "") +
+      "</button>";
+  }
+  h += "</div>";
+  h += '<div class="legend"><span>💮 0円</span><span style="color:var(--sage)">◎ 〜' + comma(st.thresholds[0]) + '</span><span style="color:var(--teal)">○ 〜' + comma(st.thresholds[1]) + '</span><span style="color:var(--amber)">△ 〜' + comma(st.thresholds[2]) + "</span><span>💦 それ以上</span></div>";
+  h += '<div class="legend" style="margin-top:4px"><span>💳 締め日</span><span>🍚 食費週スタート</span></div>';
+  h += "</div>";
+  h += '<p class="muted" style="text-align:center">日付をタップすると、その日の記録を見たり直したりできます</p>';
+  return h;
+}
+function calShift(n) {
+  CAL_M += n;
+  if (CAL_M === 0) { CAL_M = 12; CAL_Y--; }
+  if (CAL_M === 13) { CAL_M = 1; CAL_Y++; }
+  render();
+}
+function calToday() { var t = today(); CAL_Y = t.getFullYear(); CAL_M = t.getMonth() + 1; render(); }
+
+/* ---------- 日別シート ---------- */
+var sheetDate = null;
+function openDaySheet(dateStr) {
+  sheetDate = dateStr;
+  showModal('<div id="daySheetBody">' + daySheetHtml(dateStr) + "</div>");
+}
+function refreshDaySheet() { if ($("daySheetBody")) $("daySheetBody").innerHTML = daySheetHtml(sheetDate); }
+function daySheetHtml(dateStr) {
+  var info = dayInfo(dateStr);
+  var h = "<h3>" + jdateLong(dateStr) + "</h3>";
+  var hols = jpHolidays(fromYmd(dateStr).getFullYear());
+  if (hols[dateStr]) h += '<p class="muted" style="margin:-6px 0 10px">🎌 ' + esc(hols[dateStr]) + "</p>";
+  h += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">' +
+    '<div style="font-size:34px;min-width:44px;text-align:center" class="' + (info.stamp ? STAMP[info.stamp].cls : "") + '">' + (info.stamp ? stampHtml(info.stamp) : "—") + "</div>" +
+    '<div><div class="num" style="font-weight:800;font-size:1.3rem">' + yen(info.total) + "</div>" +
+    '<div class="muted">' + (info.stamp ? stampWord(info) : "まだ記録がありません") + "</div></div></div>";
+  if (info.list.length) {
+    info.list.slice().reverse().forEach(function (e) { h += entryRowHtml(e); });
+  }
+  h += '<button class="btn primary" style="margin-top:8px" onclick="openEntrySheet(null,\'' + dateStr + '\')">＋ この日の出費を追加</button>';
+  var isZero = DB.zeroDays.indexOf(dateStr) >= 0;
+  if (!info.list.length || isZero) {
+    h += '<button class="zero-btn' + (isZero ? " on" : "") + '" onclick="toggleZeroDay(\'' + dateStr + '\')">' + (isZero ? "💮 0円デー！（取り消す）" : "💮 この日は何も使わなかった（0円デー）") + "</button>";
+  }
+  return h;
+}
+
+/* ---------- 記録の追加・編集シート ---------- */
+var editEntryId = null, editDate = null, editCatId = null;
+function openEntrySheet(entryId, dateStr) {
+  editEntryId = entryId || null;
+  var e = null;
+  if (entryId) { e = DB.entries.find(function (x) { return x.id === entryId; }); if (!e) return; }
+  editDate = e ? e.date : (dateStr || ymd(today()));
+  editCatId = e ? e.catId : selCatId;
+  var h = "<h3>" + (e ? "記録をなおす" : "出費を追加") + "</h3>";
+  h += '<div class="field"><label>日付</label><input type="date" id="fDate" value="' + editDate + '"></div>';
+  h += '<div class="field"><label>金額</label><input type="text" id="fAmt" class="amt-input" inputmode="numeric" placeholder="0" value="' + (e && e.amount ? comma(e.amount) : "") + '" autocomplete="off"></div>';
+  h += '<div class="field"><label>なにに使った？</label><div class="catgrid" id="fCats">' + catChips(editCatId, "pickEditCat") + "</div></div>";
+  h += '<div class="field"><label>メモ（任意）</label><input type="text" id="fMemo" placeholder="例）コンビニ" value="' + esc(e ? e.memo : "") + '" autocomplete="off"></div>';
+  h += '<div class="sheet-actions"><button class="btn ghost" onclick="closeModal()">やめる</button><button class="btn primary" onclick="saveEntry()">保存</button></div>';
+  if (e) h += '<button class="btn del" onclick="deleteEntry()">この記録を削除する</button>';
+  showModal(h);
+  var el = $("fAmt");
+  el.addEventListener("input", function () { var n = parseAmt(this.value); this.value = n ? comma(n) : ""; });
+}
+function pickEditCat(id) { editCatId = id; $("fCats").innerHTML = catChips(editCatId, "pickEditCat"); }
+function saveEntry() {
+  var amt = parseAmt($("fAmt").value);
+  if (!amt) { toast("金額を入れてね"); return; }
+  var date = $("fDate").value;
+  if (!isRealDate(date)) { toast("日付を確認してね"); return; }
+  var memo = $("fMemo").value.trim();
+  if (editEntryId) {
+    var e = DB.entries.find(function (x) { return x.id === editEntryId; });
+    if (e) { e.amount = amt; e.date = date; e.catId = editCatId; e.memo = memo; }
+  } else {
+    DB.entries.push({ id: uid(), date: date, amount: amt, catId: editCatId, memo: memo, createdAt: new Date().toISOString() });
+  }
+  removeZeroMark(date);
+  var okSave = save(); closeModal();
+  if (okSave) toast("保存しました🌸");
+  render();
+}
+function deleteEntry() {
+  if (!confirm("この記録を削除しますか？（もとに戻せません）")) return;
+  DB.entries = DB.entries.filter(function (x) { return x.id !== editEntryId; });
+  var okSave = save(); closeModal();
+  if (okSave) toast("削除しました");
+  render();
+}
+
+/* ---------- ふたり会議 ---------- */
+function meetPeriod() { // 現在モードの期間 {start,end,label,sub}
+  var st = DB.settings;
+  if (MEET_MODE === "card") {
+    var p = cardPeriod(MEET_REF, st.cardCloseDay);
+    return { start: p.start, end: p.end, label: p.label, sub: jdate(ymd(p.start)) + " 〜 " + jdate(ymd(p.end)) };
+  }
+  if (MEET_MODE === "food") {
+    var f = foodPeriod(MEET_REF, st.foodAnchorDay);
+    return { start: f.start, end: f.end, label: "食費週 " + (f.start.getMonth() + 1) + "月スタート分", sub: jdate(ymd(f.start)) + " 〜 " + jdate(ymd(f.end)), weeks: f.weeks };
+  }
+  var y = MEET_REF.getFullYear(), m = MEET_REF.getMonth() + 1;
+  return { start: new Date(y, m - 1, 1), end: new Date(y, m, 0), label: y + "年" + m + "月", sub: "1日〜" + new Date(y, m, 0).getDate() + "日" };
+}
+function meetShift(n) {
+  var p = meetPeriod();
+  MEET_REF = n > 0 ? addDays(p.end, 1) : addDays(p.start, -1);
+  render();
+}
+function setMeetMode(m) { MEET_MODE = m; MEET_REF = today(); render(); }
+function viewMeet() {
+  var st = DB.settings;
+  var p = meetPeriod();
+  var list = entriesBetween(p.start, p.end);
+  var total = 0; list.forEach(function (e) { total += e.amount; });
+
+  var h = '<div class="segwrap">' +
+    '<button class="' + (MEET_MODE === "card" ? "on" : "") + '" onclick="setMeetMode(\'card\')">💳 締めごと</button>' +
+    '<button class="' + (MEET_MODE === "food" ? "on" : "") + '" onclick="setMeetMode(\'food\')">🍚 食費週</button>' +
+    '<button class="' + (MEET_MODE === "month" ? "on" : "") + '" onclick="setMeetMode(\'month\')">📆 月ごと</button></div>';
+
+  h += '<div class="periodbar"><button onclick="meetShift(-1)" aria-label="前の期間">‹</button>' +
+    '<div class="lb"><div class="l1">' + esc(p.label) + '</div><div class="l2">' + esc(p.sub) + "</div></div>" +
+    '<button onclick="meetShift(1)" aria-label="次の期間">›</button></div>';
+
+  // 前期間比
+  var prevEnd = addDays(p.start, -1);
+  var prevP;
+  if (MEET_MODE === "card") prevP = cardPeriod(prevEnd, st.cardCloseDay);
+  else if (MEET_MODE === "food") prevP = foodPeriod(prevEnd, st.foodAnchorDay);
+  else { var py = prevEnd.getFullYear(), pm = prevEnd.getMonth() + 1; prevP = { start: new Date(py, pm - 1, 1), end: new Date(py, pm, 0) }; }
+  var prevTotal = totalBetween(prevP.start, prevP.end);
+
+  h += '<div class="card hero2">';
+  h += '<div class="sub">この期間の合計' + (MEET_MODE === "food" ? "（食費だけでなく、ぜんぶの出費）" : "") + '</div><div class="big num">' + yen(total) + "</div>";
+  var passed = Math.min(diffDays(p.start, today()) + 1, diffDays(p.start, p.end) + 1);
+  if (passed > 0 && total > 0) h += '<div class="sub" style="margin-top:2px">1日平均 ' + yen(Math.round(total / passed)) + "</div>";
+  // 前期間比: 進行中の期間は「前の期間の同じ日数目まで」と比べる（総額と比べると序盤が必ず節約に見えるため）
+  var periodDone = diffDays(p.end, today()) > 0;
+  var cmpEnd = periodDone ? prevP.end : addDays(prevP.start, passed - 1);
+  if (diffDays(prevP.end, cmpEnd) > 0) cmpEnd = prevP.end; // 前期間の末日を超えない
+  var prevCmp = passed > 0 ? totalBetween(prevP.start, cmpEnd) : 0;
+  if (prevCmp > 0) {
+    var diff = total - prevCmp;
+    var cls = diff < 0 ? "down" : diff > 0 ? "up" : "flat";
+    var lbl = periodDone ? "前の期間より " : "前の期間の同じ日数目より ";
+    h += '<div class="cmp ' + cls + '">' + lbl + (diff === 0 ? "同じ" : (diff < 0 ? "−" : "＋") + yen(Math.abs(diff)).slice(1) + "円" + (diff < 0 ? " 節約👏" : "")) + "</div>";
+  }
+  if (MEET_MODE === "card" && total > 0) h += '<div class="sub" style="margin-top:5px">※現金の買い物もふくめた合計です</div>';
+  h += "</div>";
+
+  if (MEET_MODE === "food") {
+    h += meetFoodHtml(p);
+  }
+
+  if (!list.length) {
+    h += '<div class="card"><div class="empty"><div class="e">🌱</div>この期間の記録はまだありません。<br>「きろく」タブから毎日つけていくと、ここが育ちます</div></div>';
+    return h;
+  }
+
+  // 累積カーブ
+  h += '<h2 class="sec">💹 つかったお金の積み上がり</h2><div class="card">' + cumChartSvg(p, prevP, prevTotal) + '<div class="muted" style="text-align:center;margin-top:4px">うすい線＝前の期間の同じ日数目のペース</div></div>';
+
+  // カテゴリ内訳
+  var byCat = {};
+  list.forEach(function (e) { byCat[e.catId] = (byCat[e.catId] || 0) + e.amount; });
+  var catArr = Object.keys(byCat).map(function (k) { return { cat: catById(k), sum: byCat[k] }; });
+  catArr.sort(function (a, b) { return b.sum - a.sum; });
+  var maxSum = catArr.length ? catArr[0].sum : 1;
+  h += '<h2 class="sec">🧾 なにに使った？</h2><div class="card">';
+  catArr.forEach(function (r) {
+    var pct = total ? Math.round(r.sum / total * 100) : 0;
+    h += '<div class="catbar-row" onclick="openCatDetail(\'' + r.cat.id + '\')">' +
+      '<span class="e">' + esc(r.cat.emoji) + '</span><div class="meta">' +
+      '<div class="l"><span>' + esc(r.cat.name) + '</span><span class="a">' + yen(r.sum) + '<span class="muted"> ' + pct + "%</span></span></div>" +
+      '<div class="bar"><i style="width:' + Math.max(3, Math.round(r.sum / maxSum * 100)) + '%"></i></div></div></div>';
+  });
+  h += '<p class="muted" style="text-align:center;margin:8px 0 0">タップすると明細が見られます</p></div>';
+
+  // 統計（0円デーは「1円も使っていない記録済みの日」だけを数える）
+  var zeroN = 0, eatoutN = 0;
+  var d = new Date(p.start.getFullYear(), p.start.getMonth(), p.start.getDate());
+  while (diffDays(d, p.end) >= 0) {
+    var inf = dayInfo(ymd(d));
+    if (inf.recorded && inf.total === 0) zeroN++;
+    d = addDays(d, 1);
+  }
+  list.forEach(function (e) { var c = catById(e.catId); if (c.id === "eatout") eatoutN++; });
+  h += '<h2 class="sec">✨ この期間のようす</h2><div class="stats3">' +
+    '<div class="b"><div class="v">💮' + zeroN + '</div><div class="t">0円デー</div></div>' +
+    '<div class="b"><div class="v">🍽️' + eatoutN + '</div><div class="t">外食の回数</div></div>' +
+    '<div class="b"><div class="v num">' + list.length + '</div><div class="t">記録の数</div></div></div>';
+
+  // 大きい支出トップ5
+  var top = list.slice().sort(function (a, b) { return b.amount - a.amount; }).slice(0, 5);
+  h += '<h2 class="sec">👀 大きかった出費トップ5</h2><div class="card">';
+  top.forEach(function (e, i) {
+    var c = catById(e.catId);
+    h += '<div class="top5-row" onclick="openEntrySheet(\'' + e.id + '\')">' +
+      '<span class="rank">' + (i + 1) + '</span><span>' + esc(c.emoji) + '</span>' +
+      '<div class="grow"><div style="font-weight:700;font-size:.84rem">' + esc(e.memo || c.name) + '</div><div class="muted">' + jdate(e.date) + "・" + esc(c.name) + "</div></div>" +
+      '<span class="amt num" style="font-weight:800">' + yen(e.amount) + "</span></div>";
+  });
+  h += "</div>";
+  h += '<p class="muted" style="text-align:center;margin-top:14px">ふたりで眺めて「これは何だったっけ？」から会議スタート☕</p>';
+  return h;
+}
+function meetFoodHtml(p) {
+  var st = DB.settings;
+  var h = '<h2 class="sec">🍚 食費の週ごとチェック</h2><div class="card">';
+  if (!(st.foodBudget > 0)) {
+    h += '<div class="empty" style="padding:14px 6px"><div class="e">🎯</div>週の食費予算がまだ未設定です。<br>設定から決めると、ここで週ごとの残りが見られます</div>' +
+      '<button class="btn primary" onclick="openSettings()">予算を決める</button></div>';
+    return h;
+  }
+  var tdy = today();
+  p.weeks.forEach(function (w) {
+    var spent = foodSpent(w.start, w.end);
+    var isNow = diffDays(w.start, tdy) >= 0 && diffDays(tdy, w.end) >= 0;
+    var over = spent > st.foodBudget;
+    var pct = Math.min(100, Math.round(spent / st.foodBudget * 100));
+    var label = "第" + w.idx + "週" + (w.partial ? "（調整週・" + w.days + "日）" : "");
+    var prorated = w.partial ? Math.round(st.foodBudget * w.days / 7) : 0;
+    h += '<div class="wk-row' + (over ? " over" : "") + (isNow ? " now" : "") + '">' +
+      '<div class="l"><span>' + label + (isNow ? " 🐣いまここ" : "") + '</span><span class="d">' + jdate(ymd(w.start)) + "〜" + jdate(ymd(w.end)) + "</span></div>" +
+      '<div class="bar"><i style="width:' + (spent > 0 ? Math.max(pct, 2) : 0) + '%"></i></div>' +
+      '<div class="l" style="margin-top:3px"><span class="num" style="font-weight:800">' + yen(spent) + '<span class="muted"> / ' + yen(st.foodBudget) + "</span></span>" +
+      "<span>" + (over ? '<b style="color:var(--rose-deep)">' + yen(spent - st.foodBudget) + "オーバー</b>" : '<b style="color:var(--sage)">のこり' + yen(st.foodBudget - spent) + "</b>") + "</span></div>" +
+      (w.partial ? '<div class="muted" style="margin-top:2px">' + w.days + "日ぶんの日割りめやす＝" + yen(prorated) + "</div>" : "") + "</div>";
+  });
+  h += "</div>";
+  return h;
+}
+function cumChartSvg(p, prevP, prevTotal) {
+  var W = 320, H = 130, PAD = 6;
+  var days = diffDays(p.start, p.end) + 1;
+  var tdy = today();
+  function cumOf(start, end) {
+    var arr = [], sum = 0;
+    var byDate = {};
+    entriesBetween(start, end).forEach(function (e) { byDate[e.date] = (byDate[e.date] || 0) + e.amount; });
+    var d = new Date(start.getFullYear(), start.getMonth(), start.getDate());
+    while (diffDays(d, end) >= 0) { sum += byDate[ymd(d)] || 0; arr.push(sum); d = addDays(d, 1); }
+    return arr;
+  }
+  var cur = cumOf(p.start, p.end < tdy ? p.end : tdy);
+  var prev = prevTotal > 0 ? cumOf(prevP.start, prevP.end) : [];
+  if (prev.length > days) prev = prev.slice(0, days); // 「同じ日数目」で比べる（X軸の分母を当期に合わせる）
+  var maxV = Math.max(cur.length ? cur[cur.length - 1] : 0, prev.length ? prev[prev.length - 1] : 0, 1);
+  function pt(i, v, n) {
+    var x = PAD + (W - 2 * PAD) * (n <= 1 ? 0 : i / (n - 1));
+    var y = H - PAD - (H - 2 * PAD) * (v / maxV);
+    return x.toFixed(1) + "," + y.toFixed(1);
+  }
+  var curPts = cur.map(function (v, i) { return pt(i, v, days); }).join(" ");
+  var prevPts = prev.map(function (v, i) { return pt(i, v, days); }).join(" ");
+  var svg = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:auto;display:block">';
+  if (prevPts) svg += '<polyline points="' + prevPts + '" fill="none" stroke="var(--ink-soft)" stroke-width="1.6" stroke-linecap="round" opacity=".38" stroke-dasharray="3 4"/>';
+  if (cur.length > 1) {
+    svg += '<polygon points="' + pt(0, 0, days) + " " + curPts + " " + pt(cur.length - 1, 0, days) + '" fill="var(--rose)" opacity=".12"/>';
+    svg += '<polyline points="' + curPts + '" fill="none" stroke="var(--rose-deep)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
+  if (cur.length) {
+    var lastP = pt(cur.length - 1, cur[cur.length - 1], days).split(",");
+    svg += '<circle cx="' + lastP[0] + '" cy="' + lastP[1] + '" r="4" fill="var(--rose-deep)"/>';
+  }
+  svg += "</svg>";
+  return svg;
+}
+function openCatDetail(catId) {
+  var p = meetPeriod();
+  var c = catById(catId);
+  var list = entriesBetween(p.start, p.end).filter(function (e) { return e.catId === catId; });
+  list.sort(function (a, b) { return a.date < b.date ? 1 : -1; });
+  var sum = 0; list.forEach(function (e) { sum += e.amount; });
+  var h = "<h3>" + esc(c.emoji) + " " + esc(c.name) + 'の明細 <span class="num" style="font-size:.9rem;color:var(--ink-soft)">' + yen(sum) + "</span></h3>";
+  h += '<p class="muted" style="margin:-6px 0 10px">' + esc(p.label) + "</p>";
+  list.forEach(function (e) {
+    h += '<div class="entry-row" onclick="openEntrySheet(\'' + e.id + '\')">' +
+      '<div class="grow"><div class="nm">' + jdate(e.date) + "</div>" +
+      (e.memo ? '<div class="memo">' + esc(e.memo) + "</div>" : "") + "</div>" +
+      '<div class="amt num">' + yen(e.amount) + "</div></div>";
+  });
+  showModal(h);
+}
+
+/* ---------- モーダル ---------- */
+function showModal(bodyHtml) {
+  $("modalRoot").innerHTML = '<div class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet"><div class="grip"></div>' + bodyHtml + "</div></div>";
+}
+function closeModal() {
+  document.activeElement && document.activeElement.blur();
+  $("modalRoot").innerHTML = "";
+  sheetDate = null;
+}
+
+/* ---------- ☰メニュー ---------- */
+function openMenu() {
+  var h = "<h3>メニュー</h3>" +
+    '<button class="menu-row" onclick="closeModal();openSettings()"><span class="mi">⚙️</span>設定<span class="mc">›</span></button>' +
+    '<button class="menu-row" onclick="closeModal();openData()"><span class="mi">📦</span>データの保存・引っこし<span class="mc">›</span></button>' +
+    '<button class="menu-row" onclick="closeModal();openHelp()"><span class="mi">❓</span>つかいかた<span class="mc">›</span></button>' +
+    '<p class="muted" style="text-align:center;margin-top:10px">データはこのiPhoneの中だけに保存されています</p>';
+  showModal(h);
+}
+
+/* ---------- 設定 ---------- */
+function openSettings() { renderSettings(true); $("setScrim").classList.add("show"); $("setPage").classList.add("show"); closeModal(); }
+function closeSettingsPage() { $("setScrim").classList.remove("show"); $("setPage").classList.remove("show"); render(); }
+// 「もどる」やスクリムで閉じても、入力ずみの有効な変更は捨てずに保存する
+function applySettings(fromClose) {
+  if (!$("sBudget")) return true;
+  var st = DB.settings;
+  var t0 = parseAmt($("sT0").value), t1 = parseAmt($("sT1").value), t2 = parseAmt($("sT2").value);
+  var validT = t0 > 0 && t1 > t0 && t2 > t1;
+  if (!validT && !fromClose) { toast("しきい値は ◎＜○＜△ の順で入れてね"); return false; }
+  st.foodBudget = parseAmt($("sBudget").value);
+  st.cardCloseDay = +$("sClose").value;
+  st.foodAnchorDay = +$("sAnchor").value;
+  if (validT) st.thresholds = [t0, t1, t2];
+  else if (fromClose) toast("しきい値は順序が正しくないため元のままにしました");
+  applySettings.lastSaveOk = save();
+  return true;
+}
+function closeSettings() { applySettings(true); closeSettingsPage(); }
+function renderSettings(fresh) {
+  // 開いている間の再描画（カテゴリ操作など）で入力途中の値を消さないよう退避→復元
+  // fresh=true（開き直し）のときはDBの値から素直に作る
+  var keep = {};
+  if (!fresh) {
+    ["sBudget", "sT0", "sT1", "sT2", "sClose", "sAnchor"].forEach(function (id) { var el = $(id); if (el) keep[id] = el.value; });
+  }
+  var st = DB.settings;
+  var h = '<h2 class="sec">🍚 食費の週予算</h2><div class="card">';
+  h += '<div class="set-row"><div class="lbl">1週間の食費予算<small>毎月' + st.foodAnchorDay + '日ごろスタートの週ルール</small></div>' +
+    '<input class="mini" type="text" inputmode="numeric" id="sBudget" value="' + (st.foodBudget ? comma(st.foodBudget) : "") + '" placeholder="未設定"></div>';
+  h += "</div>";
+
+  h += '<h2 class="sec">スタンプのしきい値</h2><div class="card">';
+  h += '<div class="stamp-sample"><span class="s">💮</span>0円の日（固定）</div>';
+  h += '<div class="set-row"><div class="lbl"><span style="color:var(--sage)">◎</span> ここまでなら◎</div><input class="mini" type="text" inputmode="numeric" id="sT0" value="' + comma(st.thresholds[0]) + '"></div>';
+  h += '<div class="set-row"><div class="lbl"><span style="color:var(--teal)">○</span> ここまでなら○</div><input class="mini" type="text" inputmode="numeric" id="sT1" value="' + comma(st.thresholds[1]) + '"></div>';
+  h += '<div class="set-row"><div class="lbl"><span style="color:var(--amber)">△</span> ここまでなら△</div><input class="mini" type="text" inputmode="numeric" id="sT2" value="' + comma(st.thresholds[2]) + '"></div>';
+  h += '<div class="stamp-sample"><span class="s">💦</span>それより上の日</div>';
+  h += '<p class="muted">「判定外」のカテゴリ（医療など）は、スタンプの計算に入りません</p></div>';
+
+  h += '<h2 class="sec">日付のルール</h2><div class="card">';
+  h += '<div class="set-row"><div class="lbl">クレカの締め日<small>「締めごと」集計の区切り</small></div><select id="sClose">' + dayOptions(st.cardCloseDay) + "</select></div>";
+  h += '<div class="set-row"><div class="lbl">食費週のスタート日<small>土日祝なら前の平日に繰り上げ</small></div><select id="sAnchor">' + dayOptions(st.foodAnchorDay) + "</select></div>";
+  h += "</div>";
+
+  h += '<h2 class="sec">カテゴリ</h2><div class="card" id="catList">';
+  DB.cats.forEach(function (c, i) {
+    h += '<div class="cat-edit-row">' +
+      '<div class="ic" onclick="openCatSheet(\'' + c.id + '\')">' + esc(c.emoji) + "</div>" +
+      '<div class="nm" onclick="openCatSheet(\'' + c.id + '\')" style="' + (c.hidden ? "opacity:.5" : "") + '">' + esc(c.name) +
+      '<div class="tags">' + (c.isFood ? '<span class="mini-tag food">食費あつかい</span>' : "") + (!c.countStamp ? '<span class="mini-tag nostamp">スタンプ判定外</span>' : "") + (c.hidden ? '<span class="mini-tag hidden">非表示</span>' : "") + "</div></div>" +
+      '<button class="arrow-btn" onclick="moveCat(' + i + ',-1)" aria-label="上へ">▲</button><button class="arrow-btn" onclick="moveCat(' + i + ',1)" aria-label="下へ">▼</button></div>';
+  });
+  h += '<button class="add-dash" onclick="openCatSheet(null)">＋ カテゴリを追加</button></div>';
+
+  h += '<button class="btn primary" style="margin-top:6px" onclick="saveSettings()">設定を保存</button>';
+  $("setBody").innerHTML = h;
+  ["sBudget", "sT0", "sT1", "sT2"].forEach(function (id) {
+    var el = $(id);
+    el.addEventListener("input", function () { var n = parseAmt(this.value); this.value = n ? comma(n) : ""; });
+  });
+  Object.keys(keep).forEach(function (id) { var el = $(id); if (el) el.value = keep[id]; });
+}
+function dayOptions(sel) {
+  var h = "";
+  for (var d = 1; d <= 31; d++) h += '<option value="' + d + '"' + (d === sel ? " selected" : "") + ">" + d + "日</option>";
+  return h;
+}
+function saveSettings() {
+  if (!applySettings(false)) return;
+  if (applySettings.lastSaveOk) toast("保存しました🌸");
+  closeSettingsPage();
+}
+function moveCat(i, n) {
+  var j = i + n;
+  if (j < 0 || j >= DB.cats.length) return;
+  var t = DB.cats[i]; DB.cats[i] = DB.cats[j]; DB.cats[j] = t;
+  save(); renderSettings();
+}
+var EMOJIS = ["🍚", "🍽️", "🧺", "🎁", "🎮", "🚃", "🏥", "💰", "☕", "🍰", "👗", "💄", "📚", "🐶", "🏠", "💡", "📱", "⛽", "🎬", "💊", "🧸", "✂️", "🌸", "⭐"];
+var editCatSheetId = null, catSheetEmoji = null;
+function openCatSheet(catId) {
+  editCatSheetId = catId;
+  var c = catId ? DB.cats.find(function (x) { return x.id === catId; }) : null;
+  catSheetEmoji = c ? c.emoji : "⭐";
+  var h = "<h3>" + (c ? "カテゴリをなおす" : "カテゴリを追加") + "</h3>";
+  h += '<div class="field"><label>なまえ</label><input type="text" id="cName" value="' + esc(c ? c.name : "") + '" placeholder="例）ペット" autocomplete="off"></div>';
+  h += '<div class="field"><label>アイコン</label><div class="emoji-grid" id="cEmojis">' + emojiGrid() + "</div></div>";
+  h += '<div class="switch' + (!c || c.countStamp ? " on" : "") + '" id="cStamp" onclick="this.classList.toggle(\'on\')"><div class="track"><div class="knob"></div></div><div class="lbl">スタンプ判定に入れる<small>OFFにすると「仕方ない出費」あつかいで花丸を守れます</small></div></div>';
+  h += '<div class="switch' + (c && c.isFood ? " on" : "") + '" id="cFood" onclick="this.classList.toggle(\'on\')"><div class="track"><div class="knob"></div></div><div class="lbl">食費としてあつかう<small>週予算のチェック対象になります</small></div></div>';
+  if (c) h += '<div class="switch' + (c.hidden ? " on" : "") + '" id="cHidden" onclick="this.classList.toggle(\'on\')"><div class="track"><div class="knob"></div></div><div class="lbl">入力画面に出さない<small>過去の記録はそのまま残ります</small></div></div>';
+  h += '<div class="sheet-actions"><button class="btn ghost" onclick="closeModal()">やめる</button><button class="btn primary" onclick="saveCat()">保存</button></div>';
+  if (c) {
+    var used = DB.entries.some(function (e) { return e.catId === c.id; });
+    if (!used && DB.cats.length > 1) h += '<button class="btn del" onclick="deleteCat()">このカテゴリを削除する</button>';
+  }
+  showModal(h);
+}
+function emojiGrid() {
+  return EMOJIS.map(function (e) {
+    return '<button type="button" class="' + (catSheetEmoji === e ? "on" : "") + '" onclick="pickCatEmoji(\'' + e + "')\">" + e + "</button>";
+  }).join("");
+}
+function pickCatEmoji(e) { catSheetEmoji = e; $("cEmojis").innerHTML = emojiGrid(); }
+function saveCat() {
+  var name = $("cName").value.trim();
+  if (!name) { toast("なまえを入れてね"); return; }
+  var countStamp = $("cStamp").classList.contains("on");
+  var isFood = $("cFood").classList.contains("on");
+  if (editCatSheetId) {
+    var c = DB.cats.find(function (x) { return x.id === editCatSheetId; });
+    if (c) {
+      c.name = name; c.emoji = catSheetEmoji; c.countStamp = countStamp; c.isFood = isFood;
+      if ($("cHidden")) c.hidden = $("cHidden").classList.contains("on");
+    }
+  } else {
+    DB.cats.push({ id: uid(), name: name, emoji: catSheetEmoji, countStamp: countStamp, isFood: isFood, hidden: false });
+  }
+  var okSave = save(); closeModal();
+  if (okSave) toast("保存しました🌸");
+  renderSettings();
+}
+function deleteCat() {
+  if (!confirm("このカテゴリを削除しますか？")) return;
+  DB.cats = DB.cats.filter(function (x) { return x.id !== editCatSheetId; });
+  if (selCatId === editCatSheetId) selCatId = DB.cats[0].id;
+  save(); closeModal(); renderSettings();
+}
+
+/* ---------- データ（保存・引っこし） ---------- */
+function openData() { renderData(); $("dataScrim").classList.add("show"); $("dataPage").classList.add("show"); }
+function closeData() { $("dataScrim").classList.remove("show"); $("dataPage").classList.remove("show"); }
+function renderData() {
+  var h = '<div class="card"><p class="muted" style="margin:0 0 10px">記録はぜんぶこのiPhoneの中だけにあります。ときどき「書き出す」でバックアップを取っておくと安心です（LINEのKeepメモなどに貼っておけばOK）。</p>' +
+    '<button class="btn primary" onclick="exportData()">📋 書き出す（コピー）</button></div>';
+  h += '<h2 class="sec">読み込み（もどす）</h2><div class="card">' +
+    '<p class="muted" style="margin:0 0 8px">書き出したデータを下に貼り付けて「読み込む」を押すと、その内容にまるごと置き換わります。</p>' +
+    '<textarea class="io" id="ioText" placeholder="ここに貼り付け"></textarea>' +
+    '<button class="btn primary" style="margin-top:10px" onclick="importData()">読み込む</button></div>';
+  h += '<h2 class="sec">危険ゾーン</h2><div class="card">' +
+    '<button class="btn del" onclick="wipeData()">すべてのデータを消す</button></div>';
+  $("dataBody").innerHTML = h;
+}
+function exportData() {
+  var text = JSON.stringify(DB);
+  function done() { DB.settings.lastExportAt = new Date().toISOString(); save(); toast("コピーしました📋"); }
+  function fallback() {
+    var ta = $("ioText"); ta.value = text; ta.focus(); ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) { toast("下の欄から手動でコピーしてね"); }
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, fallback);
+  } else fallback();
+}
+function importData() {
+  var text = $("ioText").value.trim();
+  if (!text) { toast("データを貼り付けてね"); return; }
+  var d;
+  try { d = JSON.parse(text); } catch (e) { toast("データの形が読めませんでした"); return; }
+  if (!d || typeof d !== "object" || !Array.isArray(d.entries)) { toast("おしどり帳のデータではないみたい"); return; }
+  if (!confirm("いまの記録を置き換えて読み込みます。よろしいですか？")) return;
+  var nd;
+  try { nd = migrate(d); } catch (e) { toast("データの中身が読めませんでした（いまの記録は無事です）"); return; }
+  DB = nd;
+  if (save()) toast("読み込みました🌸");
+  closeData(); render();
+}
+function wipeData() {
+  if (!confirm("すべての記録・設定を消します。よろしいですか？")) return;
+  if (!confirm("ほんとうに消しますか？（もとに戻せません）")) return;
+  DB = blank();
+  if (save()) toast("まっさらにしました");
+  closeData(); render();
+}
+
+/* ---------- つかいかた ---------- */
+function openHelp() { renderHelp(); $("helpScrim").classList.add("show"); $("helpPage").classList.add("show"); }
+function closeHelp() { $("helpScrim").classList.remove("show"); $("helpPage").classList.remove("show"); }
+function renderHelp() {
+  var st = DB.settings;
+  $("helpBody").innerHTML =
+    '<div class="card"><h3 style="margin-top:0">🦆 おしどり帳って？</h3>' +
+    "<p>毎日の出費をきろくして、つかわなかった日にはスタンプがもらえる、節約おうえんアプリです。カレンダーにスタンプがならぶのを楽しみに、ふたりでコツコツ続けましょう。</p></div>" +
+    '<div class="card"><h3 style="margin-top:0">✍️ まいにちやること</h3>' +
+    "<p>「きろく」タブで、金額を入れて → カテゴリをえらんで → きろくする。それだけ！<br>何も使わなかった日は「0円デー」ボタンで花丸💮がつきます。</p></div>" +
+    '<div class="card"><h3 style="margin-top:0">スタンプのいみ</h3>' +
+    '<div class="stamp-sample"><span class="s">💮</span>0円の日（さいこう！）</div>' +
+    '<div class="stamp-sample"><span class="s" style="color:var(--sage)">◎</span>〜' + comma(st.thresholds[0]) + "円</div>" +
+    '<div class="stamp-sample"><span class="s" style="color:var(--teal)">○</span>〜' + comma(st.thresholds[1]) + "円</div>" +
+    '<div class="stamp-sample"><span class="s" style="color:var(--amber)">△</span>〜' + comma(st.thresholds[2]) + "円</div>" +
+    '<div class="stamp-sample"><span class="s">💦</span>それより上</div>' +
+    '<p class="muted">きんがくは設定でかえられます。医療など「仕方ない出費」はスタンプ判定に入りません。</p></div>' +
+    '<div class="card"><h3 style="margin-top:0">📅 カレンダー</h3>' +
+    "<p>日付をタップすると、その日のきろくを見たり、あとから直したりできます。💳は締め日、🍚は食費週のスタートの目じるしです。</p></div>" +
+    '<div class="card"><h3 style="margin-top:0">📊 ふたり会議</h3>' +
+    "<p>クレカの締め（" + ((st.cardCloseDay % 31) + 1) + "日〜" + st.cardCloseDay + "日）ごと・食費週ごと・月ごとに、なにに使ったかをふりかえられます。月に1回、ふたりで眺めるのがおすすめ☕</p></div>";
+}
+
+/* ---------- 初期化 ---------- */
+$("menuBtn").addEventListener("click", openMenu);
+$("setBack").addEventListener("click", closeSettings);
+$("setScrim").addEventListener("click", closeSettings);
+$("dataBack").addEventListener("click", closeData);
+$("dataScrim").addEventListener("click", closeData);
+$("helpBack").addEventListener("click", closeHelp);
+$("helpScrim").addEventListener("click", closeHelp);
+render();
+if (_loadFailed) toast("⚠️ 前回のデータが読めなかったため、まっさらから始めています");
+
+// 日付が変わったとき（アプリを開きっぱなし→復帰）に表示を更新
+// ※入力中のシートがあるときは邪魔しない（閉じたときには次のrender()で最新になる）
+var lastDay = ymd(today());
+document.addEventListener("visibilitychange", function () {
+  if (!document.hidden && ymd(today()) !== lastDay && !$("modalRoot").firstChild) {
+    lastDay = ymd(today()); render();
+  }
+});
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () { navigator.serviceWorker.register("./sw.js").catch(function () {}); });
+}
+</script>
+</body>
+</html>
