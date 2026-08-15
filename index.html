@@ -768,12 +768,14 @@ function viewCal() {
   var lead = first.getDay();
   var td = ymd(today());
   var hols = jpHolidays(CAL_Y);
-  // 🍚マーク: この月に実際に落ちる起点日（前倒しで前月へ食い込んだ翌月分も拾う）
-  var anchorSet = {};
-  [[CAL_Y, CAL_M], CAL_M === 12 ? [CAL_Y + 1, 1] : [CAL_Y, CAL_M + 1]].forEach(function (p2) {
-    var a = foodAnchor(p2[0], p2[1], st.foodAnchorDay);
-    if (a.getFullYear() === CAL_Y && a.getMonth() + 1 === CAL_M) anchorSet[ymd(a)] = 1;
-  });
+  // 🍚マーク: 毎週の食費週スタート日ぜんぶ（月の起点日も第1週スタートとして含まれる）
+  var weekStartSet = {};
+  var wd0 = new Date(CAL_Y, CAL_M - 1, 1), wdEnd = new Date(CAL_Y, CAL_M - 1, daysInMonth);
+  while (diffDays(wd0, wdEnd) >= 0) {
+    var fw0 = foodWeekOf(wd0, st.foodAnchorDay);
+    if (fw0.week && diffDays(fw0.week.start, wd0) === 0) weekStartSet[ymd(wd0)] = fw0.week.idx;
+    wd0 = addDays(wd0, 1);
+  }
   // 💳マーク: 月末より大きい締め日は月末に丸める（期間計算と同じ扱い）
   var effCloseDay = Math.min(st.cardCloseDay, daysInMonth);
 
@@ -814,7 +816,7 @@ function viewCal() {
     if (ds2 > td) cls += " future";
     var marks = "";
     if (d === effCloseDay) marks += "💳";
-    if (anchorSet[ds2]) marks += "🍚";
+    if (weekStartSet[ds2]) marks += "🍚";
     h += '<button class="' + cls + '" onclick="openDaySheet(\'' + ds2 + '\')">' +
       '<span class="d">' + d + "</span>" +
       (marks ? '<span class="marks">' + marks + "</span>" : "") +
@@ -1119,9 +1121,94 @@ function closeModal() {
 function openMenu() {
   var h = "<h3>メニュー</h3>" +
     '<button class="menu-row" onclick="closeModal();openSettings()"><span class="mi">⚙️</span>設定<span class="mc">›</span></button>' +
+    '<button class="menu-row" onclick="closeModal();openCalSheet()"><span class="mi">🔔</span>iPhoneカレンダーに通知を登録<span class="mc">›</span></button>' +
     '<button class="menu-row" onclick="closeModal();openData()"><span class="mi">📦</span>データの保存・引っこし<span class="mc">›</span></button>' +
     '<button class="menu-row" onclick="closeModal();openHelp()"><span class="mi">❓</span>つかいかた<span class="mc">›</span></button>' +
     '<p class="muted" style="text-align:center;margin-top:10px">データはこのiPhoneの中だけに保存されています</p>';
+  showModal(h);
+}
+
+/* ---------- iPhoneカレンダー登録（.ics書き出し） ---------- */
+// 75オクテット制限に合わせた行折り返し（マルチバイト安全・継続行は先頭スペース）
+function icsFold(line) {
+  var out = "", cur = "", bytes = 0;
+  var chars = Array.from(line);
+  for (var i = 0; i < chars.length; i++) {
+    var b = unescape(encodeURIComponent(chars[i])).length;
+    if (bytes + b > 70) { out += cur + "\r\n "; cur = ""; bytes = 1; }
+    cur += chars[i]; bytes += b;
+  }
+  return out + cur;
+}
+function buildIcs() {
+  var st = DB.settings;
+  var start = today();
+  var end = new Date(start.getFullYear(), start.getMonth() + 13, start.getDate());
+  var stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d+Z$/, "Z");
+  var L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//oshidoricho//JP", "CALSCALE:GREGORIAN",
+    icsFold("X-WR-CALNAME:おしどり帳（締め日・食費週）")];
+  function ev(uid, d, summary, desc, alarmText) {
+    var ds = ymd(d).replace(/-/g, "");
+    L.push("BEGIN:VEVENT", "UID:" + uid + "@oshidoricho", "DTSTAMP:" + stamp,
+      "DTSTART:" + ds + "T080000", "DTEND:" + ds + "T081500",
+      icsFold("SUMMARY:" + summary), icsFold("DESCRIPTION:" + desc),
+      "BEGIN:VALARM", "ACTION:DISPLAY", icsFold("DESCRIPTION:" + alarmText),
+      "TRIGGER:-PT0M", "END:VALARM", "END:VEVENT");
+  }
+  var count = 0;
+  // 💳 クレカ締め日（毎月・月末丸め）
+  for (var i = 0; i <= 13; i++) {
+    var y = start.getFullYear(), m = start.getMonth() + i; // 0始まりのまま加算
+    var last = new Date(y, m + 1, 0).getDate();
+    var cd = new Date(y, m, Math.min(st.cardCloseDay, last));
+    if (diffDays(start, cd) >= 0 && diffDays(cd, end) >= 0) {
+      ev("close-" + ymd(cd).replace(/-/g, ""), cd,
+        "💳 クレカ締め日", "この日までの分が今回の請求。おしどり帳の「ふたり会議」でふりかえりを☕",
+        "きょうはクレカの締め日！💳 おしどり帳でチェック");
+      count++;
+    }
+  }
+  // 🍚 食費週スタート（毎週・祝日調整済み）
+  var p = foodPeriod(start, st.foodAnchorDay);
+  while (diffDays(p.start, end) >= 0) {
+    p.weeks.forEach(function (w) {
+      if (diffDays(start, w.start) >= 0 && diffDays(w.start, end) >= 0) {
+        ev("foodweek-" + ymd(w.start).replace(/-/g, ""), w.start,
+          "🍚 食費週スタート", "第" + w.idx + "週（" + jdate(ymd(w.start)) + "〜" + jdate(ymd(w.end)) + "）。週予算リセットの日",
+          "きょうから新しい食費週！🍚");
+        count++;
+      }
+    });
+    p = foodPeriod(addDays(p.end, 1), st.foodAnchorDay);
+  }
+  L.push("END:VCALENDAR");
+  return { text: L.join("\r\n") + "\r\n", count: count, from: start, to: end };
+}
+function exportIcs() {
+  var ics = buildIcs();
+  var blob = new Blob([ics.text], { type: "text/calendar;charset=utf-8" });
+  var file = null;
+  try { file = new File([blob], "oshidoricho.ics", { type: "text/calendar" }); } catch (e) {}
+  if (file && navigator.canShare && navigator.share && navigator.canShare({ files: [file] })) {
+    navigator.share({ files: [file], title: "おしどり帳の予定" }).catch(function () {});
+  } else {
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "oshidoricho.ics";
+    document.body.appendChild(a); a.click(); a.remove();
+  }
+}
+function openCalSheet() {
+  var st = DB.settings;
+  var ics = buildIcs();
+  var h = "<h3>🔔 iPhoneカレンダーに通知を登録</h3>" +
+    '<p class="muted" style="margin:0 0 10px">💳 クレカ締め日（毎月' + st.cardCloseDay + '日ごろ）と 🍚 食費週スタート（毎週）を、iPhoneの標準カレンダーに予定として登録します。<b>当日の朝8時に通知</b>が届きます。</p>' +
+    '<p class="muted" style="margin:0 0 12px">これから13ヶ月分・' + ics.count + '件。もう一度やり直しても同じ予定は二重になりません。</p>' +
+    '<button class="btn primary" onclick="exportIcs()">📅 カレンダー用ファイルを作る</button>' +
+    '<div class="muted" style="margin-top:12px;line-height:1.8">押したあとの流れ：<br>' +
+    '① 画面が開いたら「<b>追加</b>」または「<b>すべて追加</b>」で登録完了<br>' +
+    '② 共有画面が出た場合は「<b>"ファイル"に保存</b>」→ ファイルAppで保存先を開いてタップ → 「すべて追加」<br>' +
+    '※ 設定で締め日・起点日を変えたときは、ここからもう一度登録し直してください</div>';
   showModal(h);
 }
 
