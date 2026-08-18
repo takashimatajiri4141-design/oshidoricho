@@ -1,7 +1,7 @@
 // おしどり帳 — オフライン対応の簡易 Service Worker
 // 方針：ネットがあれば最新を取りに行き、なければキャッシュから返す（network-first）。
 // これで「更新すれば新しい版が届く／圏外でも起動する」を両立します。
-var CACHE = "oshidori-cho-v2";
+var CACHE = "oshidori-cho-v3";
 var ASSETS = [
   "./",
   "./index.html",
@@ -41,8 +41,10 @@ self.addEventListener("fetch", function (e) {
       if (res && res.ok && res.type === "basic") {
         var copy = res.clone();
         caches.open(CACHE).then(function (c) { c.put(e.request, copy).catch(function () {}); });
+        return res;
       }
-      return res;
+      // サーバがエラー（404/500等）を返したときも、手元に良いキャッシュがあればそちらを返す
+      return caches.match(e.request).then(function (hit) { return hit || res; });
     }).catch(function () {
       return caches.match(e.request).then(function (hit) {
         return hit || caches.match("./index.html");

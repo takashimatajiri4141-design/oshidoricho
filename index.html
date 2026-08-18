@@ -257,6 +257,14 @@ textarea.io { width: 100%; height: 130px; border: 1.5px solid var(--line); backg
 .toast { position: fixed; top: calc(env(safe-area-inset-top) + 14px); left: 50%; transform: translateX(-50%) translateY(-80px); z-index: 90; background: var(--ink); color: var(--bg); font-size: .82rem; font-weight: 700; padding: 10px 18px; border-radius: 99px; box-shadow: 0 6px 20px rgba(0,0,0,.25); transition: transform .3s cubic-bezier(.3,1.2,.4,1); white-space: nowrap; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 .banner { display: flex; align-items: center; gap: 9px; background: var(--amber-soft); color: var(--amber); border-radius: 13px; padding: 10px 13px; font-size: .78rem; font-weight: 700; margin-bottom: 12px; cursor: pointer; border: none; width: 100%; text-align: left; font-family: var(--font-body); }
+.browser-warn { display: none; max-width: 448px; margin: 12px 16px 0; background: var(--amber-soft); color: var(--amber); border-radius: 13px; padding: 10px 13px; font-size: .78rem; font-weight: 700; line-height: 1.65; }
+.browser-warn.show { display: block; }
+@media (min-width: 481px) { .browser-warn { margin-left: auto; margin-right: auto; } }
+.bk-row { width: 100%; border: none; background: var(--surface-2); border-radius: 12px; padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; font-family: var(--font-body); color: var(--ink); text-align: left; }
+.bk-row .bk-main { flex: 1; min-width: 0; }
+.bk-row .bk-d { font-weight: 700; font-size: .88rem; }
+.bk-row .bk-n { font-size: .72rem; color: var(--ink-soft); margin-top: 1px; }
+.bk-row .bk-arrow { color: var(--ink-soft); }
 .helpbox p { font-size: .84rem; line-height: 1.75; margin: 6px 0; }
 .helpbox h3 { font-family: var(--font-round); font-size: .92rem; margin: 16px 0 4px; }
 .stamp-sample { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: .84rem; }
@@ -274,6 +282,7 @@ textarea.io { width: 100%; height: 130px; border: 1.5px solid var(--line); backg
   <button class="menu-btn" id="menuBtn" aria-label="メニュー">☰</button>
 </header>
 
+<div class="browser-warn" id="browserWarn">⚠️ いまは<b>ブラウザ（Safari）表示</b>です。ここでのきろくは、ホーム画面の🦆アプリとは<b>別々に保存</b>されます。ふだんのきろくは、ホーム画面の「おしどり帳」から開いてね。</div>
 <main class="wrap" id="view"></main>
 
 <nav class="tabs" id="nav"></nav>
@@ -306,7 +315,9 @@ textarea.io { width: 100%; height: 130px; border: 1.5px solid var(--line); backg
 "use strict";
 /* =====================================================
    おしどり帳 — 毎日の出費を記録して節約をたのしむ習慣カレンダー
-   データはこのiPhoneの中（localStorage）だけに保存されます。
+   データはこのiPhoneの中（localStorage＋IndexedDBの控え）だけに保存されます。
+   v1.2 (2026-08-19): データ消失対策＝IndexedDB自動バックアップ・起動時自動復元・
+                      控え一覧からの復元・storage.persist()・ブラウザ表示の注意バナー
    ===================================================== */
 
 /* ---------- 小道具 ---------- */
@@ -516,9 +527,9 @@ function migrate(d) {
   if (typeof s.lastExportAt !== "string") s.lastExportAt = "";
   return d;
 }
-var DB, _loadFailed = false;
+var DB, _loadFailed = false, _raw = null;
 try {
-  var _raw = localStorage.getItem(KEY);
+  _raw = localStorage.getItem(KEY);
   DB = migrate(_raw ? JSON.parse(_raw) : null);
 } catch (e) {
   // 読めなかった元データは消さずに退避（手作業で救える余地を残す）
@@ -526,9 +537,70 @@ try {
   _loadFailed = true;
   DB = blank();
 }
+
+/* ---------- まもり（v1.1）: 自動バックアップと自動復元 ----------
+   localStorageが（iOSの掃除・再アプリ化などで）消えたときの保険として、
+   同じiPhoneの中のIndexedDBにも控えを二重で持つ。外部への送信は一切なし。 */
+var IDB_NAME = "oshidoricho_backup", IDB_STORE = "kv", SNAP_KEEP = 21;
+function idbOpen(cb) {
+  try {
+    var req = indexedDB.open(IDB_NAME, 1);
+    req.onupgradeneeded = function () { req.result.createObjectStore(IDB_STORE); };
+    req.onsuccess = function () { cb(req.result); };
+    req.onerror = function () { cb(null); };
+  } catch (e) { cb(null); }
+}
+function idbPut(key, val) {
+  idbOpen(function (db) {
+    if (!db) return;
+    try { db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).put(val, key); } catch (e) {}
+  });
+}
+function idbGet(key, cb) {
+  idbOpen(function (db) {
+    if (!db) { cb(null); return; }
+    try {
+      var rq = db.transaction(IDB_STORE, "readonly").objectStore(IDB_STORE).get(key);
+      rq.onsuccess = function () { cb(rq.result || null); };
+      rq.onerror = function () { cb(null); };
+    } catch (e) { cb(null); }
+  });
+}
+function idbKeys(cb) {
+  idbOpen(function (db) {
+    if (!db) { cb([]); return; }
+    try {
+      var rq = db.transaction(IDB_STORE, "readonly").objectStore(IDB_STORE).getAllKeys();
+      rq.onsuccess = function () { cb(rq.result || []); };
+      rq.onerror = function () { cb([]); };
+    } catch (e) { cb([]); }
+  });
+}
+function idbDel(key) {
+  idbOpen(function (db) {
+    if (!db) return;
+    try { db.transaction(IDB_STORE, "readwrite").objectStore(IDB_STORE).delete(key); } catch (e) {}
+  });
+}
+function recCount(d) { return ((d && d.entries) ? d.entries.length : 0) + ((d && d.zeroDays) ? d.zeroDays.length : 0); }
+function backupToIdb() {
+  // 空っぽの状態は控えに書かない＝きろく入りの控えを空で上書きしない
+  // （起動直後の修復save()や、消えた直後のsave()から控えを守る。全消去だけは控えも直接消す）
+  if (recCount(DB) === 0) return;
+  var payload = { json: JSON.stringify(DB), at: Date.now(), n: recCount(DB) };
+  idbPut("mirror", payload);              // つねに最新の控え
+  idbPut("snap-" + ymd(today()), payload); // その日の終わりの控え（日ごとに1つ）
+}
+function pruneSnaps() {
+  idbKeys(function (keys) {
+    var snaps = keys.filter(function (k) { return typeof k === "string" && k.indexOf("snap-") === 0; }).sort();
+    while (snaps.length > SNAP_KEEP) idbDel(snaps.shift());
+  });
+}
 function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(DB)); return true; }
+  try { localStorage.setItem(KEY, JSON.stringify(DB)); backupToIdb(); return true; }
   catch (e) {
+    backupToIdb(); // 本体が書けないときこそ、せめて控えには残す（IndexedDBは別枠で書けることがある）
     toast("⚠️ 保存できませんでした（空き容量・プライベートモードを確認してね）");
     return false;
   }
@@ -1203,7 +1275,7 @@ function openCalSheet() {
   var ics = buildIcs();
   var h = "<h3>🔔 iPhoneカレンダーに通知を登録</h3>" +
     '<p class="muted" style="margin:0 0 10px">💳 クレカ締め日（毎月' + st.cardCloseDay + '日ごろ）と 🍚 食費週スタート（毎週）を、iPhoneの標準カレンダーに予定として登録します。<b>当日の朝8時に通知</b>が届きます。</p>' +
-    '<p class="muted" style="margin:0 0 12px">これから13ヶ月分・' + ics.count + '件。もう一度やり直しても同じ予定は二重になりません。</p>' +
+    '<p class="muted" style="margin:0 0 12px">これから13ヶ月分・' + ics.count + '件。もしやり直して予定が二重になったら、前回の分を削除してください。</p>' +
     '<button class="btn primary" onclick="exportIcs()">📅 カレンダー用ファイルを作る</button>' +
     '<div class="muted" style="margin-top:12px;line-height:1.8">押したあとの流れ：<br>' +
     '① 画面が開いたら「<b>追加</b>」または「<b>すべて追加</b>」で登録完了<br>' +
@@ -1351,9 +1423,66 @@ function renderData() {
     '<p class="muted" style="margin:0 0 8px">書き出したデータを下に貼り付けて「読み込む」を押すと、その内容にまるごと置き換わります。</p>' +
     '<textarea class="io" id="ioText" placeholder="ここに貼り付け"></textarea>' +
     '<button class="btn primary" style="margin-top:10px" onclick="importData()">読み込む</button></div>';
+  h += '<h2 class="sec">🛟 じどうバックアップ</h2><div class="card">' +
+    '<p class="muted" style="margin:0 0 8px">アプリが自動で、このiPhoneの中に控えを取っています（外には送りません）。まちがえて消したときは、ここから戻せます。</p>' +
+    '<button class="btn primary" onclick="openBackupList()">控えの一覧を見る</button></div>';
   h += '<h2 class="sec">危険ゾーン</h2><div class="card">' +
     '<button class="btn del" onclick="wipeData()">すべてのデータを消す</button></div>';
   $("dataBody").innerHTML = h;
+}
+function bkTime(ts) { if (!ts) return ""; var d = new Date(ts); return (d.getMonth() + 1) + "/" + d.getDate() + " " + d.getHours() + ":" + ("0" + d.getMinutes()).slice(-2) + " 保存"; }
+function bkLabel(key) {
+  if (key === "mirror") return "いちばん新しい控え";
+  if (key === "pre-import") return "読み込みで置き換える直前";
+  if (key === "pre-restore") return "復元する直前";
+  if (key.indexOf("snap-") === 0) return jdate(key.slice(5)) + " の控え";
+  return key;
+}
+function openBackupList() {
+  idbKeys(function (keys) {
+    keys = keys.filter(function (k) { return typeof k === "string"; });
+    // 新しい順: mirror → 直前控え → 日付スナップ降順
+    var order = { "mirror": 0, "pre-import": 1, "pre-restore": 1 };
+    keys.sort(function (a, b) {
+      var oa = (a in order) ? order[a] : 2, ob = (b in order) ? order[b] : 2;
+      return oa !== ob ? oa - ob : (a < b ? 1 : -1);
+    });
+    if (!keys.length) { showModal("<h3>🛟 じどうバックアップ</h3><p class=\"muted\">控えはまだありません。きろくを保存すると自動で作られます。</p>"); return; }
+    // 全件読み終えてから、キー順どおりに一括で描画する（コールバックの到着順に依存させない）
+    var got = {}, remain = keys.length;
+    keys.forEach(function (k) {
+      idbGet(k, function (v) {
+        got[k] = v; remain--;
+        if (remain > 0) return;
+        var h = "<h3>🛟 じどうバックアップ</h3><p class=\"muted\" style=\"margin:0 0 10px\">タップすると、その控えの内容に戻せます（いまの状態も「復元する直前」として控えに残ります）。</p><div id=\"bkList\"></div>";
+        showModal(h);
+        var host = $("bkList");
+        keys.forEach(function (k2) {
+          var v2 = got[k2];
+          if (!host || !v2) return;
+          var btn = document.createElement("button");
+          btn.className = "bk-row";
+          btn.innerHTML = '<div class="bk-main"><div class="bk-d"></div><div class="bk-n"></div></div><span class="bk-arrow">›</span>';
+          btn.querySelector(".bk-d").textContent = bkLabel(k2);
+          btn.querySelector(".bk-n").textContent = "きろく " + (v2.n || 0) + "件・" + bkTime(v2.at);
+          btn.addEventListener("click", function () { restoreBackup(k2); });
+          host.appendChild(btn);
+        });
+      });
+    });
+  });
+}
+function restoreBackup(key) {
+  idbGet(key, function (v) {
+    if (!v || !v.json) { toast("この控えは読めませんでした"); return; }
+    var d;
+    try { d = migrate(JSON.parse(v.json)); } catch (e) { toast("この控えは読めませんでした"); return; }
+    if (!confirm("「" + bkLabel(key) + "」（きろく" + (v.n || 0) + "件）に置き換えます。よろしいですか？")) return;
+    idbPut("pre-restore", { json: JSON.stringify(DB), at: Date.now(), n: recCount(DB) });
+    DB = d;
+    if (save()) toast("🛟 復元しました");
+    closeModal(); closeData(); render();
+  });
 }
 function exportData() {
   var text = JSON.stringify(DB);
@@ -1375,15 +1504,22 @@ function importData() {
   if (!confirm("いまの記録を置き換えて読み込みます。よろしいですか？")) return;
   var nd;
   try { nd = migrate(d); } catch (e) { toast("データの中身が読めませんでした（いまの記録は無事です）"); return; }
+  // 置き換える直前の状態を控えに残す（まちがえてももどせる）
+  idbPut("pre-import", { json: JSON.stringify(DB), at: Date.now(), n: recCount(DB) });
+  var wanted = (Array.isArray(d.entries) ? d.entries.length : 0) + (Array.isArray(d.zeroDays) ? d.zeroDays.length : 0);
+  var kept = recCount(nd);
   DB = nd;
-  if (save()) toast("読み込みました🌸");
+  if (save()) toast(kept < wanted ? "読み込みました（" + (wanted - kept) + "件は日付が読めずスキップ）" : "読み込みました🌸");
   closeData(); render();
 }
 function wipeData() {
-  if (!confirm("すべての記録・設定を消します。よろしいですか？")) return;
+  if (!confirm("すべての記録・設定を消します（じどうバックアップの控えも消えます）。よろしいですか？")) return;
   if (!confirm("ほんとうに消しますか？（もとに戻せません）")) return;
   DB = blank();
-  if (save()) toast("まっさらにしました");
+  try { localStorage.setItem(KEY, JSON.stringify(DB)); } catch (e) {}
+  // 控えも約束どおりぜんぶ消す（save()経由だと新しい控えができてしまうため直接書く）
+  idbKeys(function (keys) { keys.forEach(function (k) { idbDel(k); }); });
+  toast("まっさらにしました");
   closeData(); render();
 }
 
@@ -1420,6 +1556,30 @@ $("helpBack").addEventListener("click", closeHelp);
 $("helpScrim").addEventListener("click", closeHelp);
 render();
 if (_loadFailed) toast("⚠️ 前回のデータが読めなかったため、まっさらから始めています");
+
+/* ---------- まもり（v1.1）: 起動時のケア ---------- */
+// ① iOSに「このサイトのデータを自動で消さないで」とお願いする（対応OSでは削除されにくくなる）
+try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(function () {}); } catch (e) {}
+
+// ② ホーム画面アプリではなくブラウザのタブで開いているときは、保存場所が別になる注意を出す
+var IS_APP = false;
+try { IS_APP = (navigator.standalone === true) || (window.matchMedia && matchMedia("(display-mode: standalone)").matches); } catch (e) {}
+if (!IS_APP) $("browserWarn").classList.add("show");
+
+// ③ 保存データが空で始まったときは、IndexedDBの控えから自動復元を試みる
+if (!_raw || _loadFailed) {
+  idbGet("mirror", function (m) {
+    if (!m || !m.json) return;
+    var d;
+    try { d = migrate(JSON.parse(m.json)); } catch (e) { return; }
+    if (recCount(d) === 0) return;
+    if (recCount(DB) > 0) return; // すでに新しい記録が始まっていたら黙って上書きしない（控えは一覧から選べる）
+    DB = d;
+    save(); render();
+    toast("🛟 自動バックアップから きろくを復元しました");
+  });
+}
+pruneSnaps();
 
 // 日付が変わったとき（アプリを開きっぱなし→復帰）に表示を更新
 // ※入力中のシートがあるときは邪魔しない（閉じたときには次のrender()で最新になる）
