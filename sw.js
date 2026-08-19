@@ -26,7 +26,9 @@ self.addEventListener("activate", function (e) {
   e.waitUntil(
     caches.keys().then(function (keys) {
       return Promise.all(keys.map(function (k) {
-        if (k !== CACHE) return caches.delete(k);
+        // 自分（このアプリ）の古いキャッシュだけ消す。GitHub Pagesでは姉妹アプリと
+        // 同じオリジンを共有するため、名前を絞らないと他アプリのキャッシュまで消してしまう
+        if (k.indexOf("oshidori-cho-") === 0 && k !== CACHE) return caches.delete(k);
       }));
     }).then(function () { return self.clients.claim(); })
   );
