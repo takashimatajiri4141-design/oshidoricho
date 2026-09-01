@@ -433,19 +433,23 @@ function foodWeekOf(date, anchorDay) {
   }
   return { period: p, week: null };
 }
-function cardPeriod(date, closeDay) {
-  var y = date.getFullYear(), m = date.getMonth() + 1;
+function periodByYM(cy, cm, closeDay) {
   function closeOf(yy, mm) {
     var last = new Date(yy, mm, 0).getDate();
     return new Date(yy, mm - 1, Math.min(closeDay, last));
   }
-  var thisClose = closeOf(y, m);
-  var cy = y, cm = m;
-  if (diffDays(date, thisClose) < 0) { cm++; if (cm === 13) { cm = 1; cy++; } }
   var close = closeOf(cy, cm);
   var pm = cm - 1, py = cy; if (pm === 0) { pm = 12; py--; }
   var start = addDays(closeOf(py, pm), 1);
-  return { start: start, end: close, label: cy + "年" + cm + "月締め" };
+  return { start: start, end: close, label: cy + "年" + cm + "月締め", cy: cy, cm: cm };
+}
+function cardPeriod(date, closeDay) {
+  var y = date.getFullYear(), m = date.getMonth() + 1;
+  var last = new Date(y, m, 0).getDate();
+  var thisClose = new Date(y, m - 1, Math.min(closeDay, last));
+  var cy = y, cm = m;
+  if (diffDays(date, thisClose) < 0) { cm++; if (cm === 13) { cm = 1; cy++; } }
+  return periodByYM(cy, cm, closeDay);
 }
 
 /* ---------- 状態 ---------- */
@@ -676,8 +680,8 @@ function totalBetween(a, b) {
 /* ---------- タブ・描画 ---------- */
 var TAB = "record";
 var TABS = [["record", "✍️", "きろく"], ["cal", "📅", "カレンダー"], ["meet", "📊", "ふたり会議"]];
-var CAL_Y, CAL_M; // カレンダー表示中の年月
-(function () { var t = today(); CAL_Y = t.getFullYear(); CAL_M = t.getMonth() + 1; })();
+var CAL_Y, CAL_M; // カレンダー表示中の締め月（例: 9月締め＝8/16〜9/15。クレカ締め日と同じ区切り）
+(function () { var p = cardPeriod(today(), DB.settings.cardCloseDay); CAL_Y = p.cy; CAL_M = p.cm; })();
 var MEET_MODE = "card"; // card | food | month
 var MEET_REF = today(); // 期間内の基準日
 var selCatId = "food";  // きろく画面で選択中のカテゴリ
@@ -835,66 +839,73 @@ function toggleZeroDay(dateStr) {
 /* ---------- カレンダー ---------- */
 function viewCal() {
   var st = DB.settings;
-  var first = new Date(CAL_Y, CAL_M - 1, 1);
-  var daysInMonth = new Date(CAL_Y, CAL_M, 0).getDate();
-  var lead = first.getDay();
+  var period = periodByYM(CAL_Y, CAL_M, st.cardCloseDay);
+  var start = period.start, end = period.end;
+  var lead = start.getDay();
   var td = ymd(today());
-  var hols = jpHolidays(CAL_Y);
-  // 🍚マーク: 毎週の食費週スタート日ぜんぶ（月の起点日も第1週スタートとして含まれる）
+  // 期間が年またぎのときは両年ぶんの祝日を合成（jpHolidaysのキャッシュ本体は書き換えない）
+  var hols = {};
+  Object.keys(jpHolidays(start.getFullYear())).forEach(function (k) { hols[k] = 1; });
+  if (end.getFullYear() !== start.getFullYear()) {
+    Object.keys(jpHolidays(end.getFullYear())).forEach(function (k) { hols[k] = 1; });
+  }
+  // 🍚マーク: 期間内の毎週の食費週スタート日ぜんぶ（期間の起点日も第1週スタートとして含まれる）
   var weekStartSet = {};
-  var wd0 = new Date(CAL_Y, CAL_M - 1, 1), wdEnd = new Date(CAL_Y, CAL_M - 1, daysInMonth);
-  while (diffDays(wd0, wdEnd) >= 0) {
+  var wd0 = start;
+  while (diffDays(wd0, end) >= 0) {
     var fw0 = foodWeekOf(wd0, st.foodAnchorDay);
     if (fw0.week && diffDays(fw0.week.start, wd0) === 0) weekStartSet[ymd(wd0)] = fw0.week.idx;
     wd0 = addDays(wd0, 1);
   }
-  // 💳マーク: 月末より大きい締め日は月末に丸める（期間計算と同じ扱い）
-  var effCloseDay = Math.min(st.cardCloseDay, daysInMonth);
 
   var h = '<div class="calbar">' +
-    '<button onclick="calShift(-1)" aria-label="前の月">‹</button>' +
-    '<div class="ym num">' + CAL_Y + "年" + CAL_M + "月</div>" +
-    '<button onclick="calShift(1)" aria-label="次の月">›</button>' +
+    '<button onclick="calShift(-1)" aria-label="前の期間">‹</button>' +
+    '<div class="ym num">' + period.label + "</div>" +
+    '<button onclick="calShift(1)" aria-label="次の期間">›</button>' +
     '<button class="todaybtn" onclick="calToday()">今日</button></div>';
 
-  // 月サマリ
+  // 期間サマリ
   var hana = 0, niju = 0, rec = 0, mTotal = 0;
-  for (var d = 1; d <= daysInMonth; d++) {
-    var ds = CAL_Y + "-" + pad2(CAL_M) + "-" + pad2(d);
-    var inf = dayInfo(ds);
+  var dd = start;
+  while (diffDays(dd, end) >= 0) {
+    var inf = dayInfo(ymd(dd));
     if (inf.stamp === "hanamaru") hana++;
     if (inf.stamp === "nijuu") niju++;
     if (inf.recorded) rec++;
     mTotal += inf.total;
+    dd = addDays(dd, 1);
   }
   h += '<div class="calsum">' +
     '<div class="b"><div class="v">💮' + hana + '</div><div class="t">花丸の日</div></div>' +
     '<div class="b"><div class="v" style="color:var(--sage)">◎' + niju + '</div><div class="t">じょうずな日</div></div>' +
-    '<div class="b"><div class="v num">' + yen(mTotal) + '</div><div class="t">この月の合計</div></div></div>';
+    '<div class="b"><div class="v num">' + yen(mTotal) + '</div><div class="t">この期間の合計</div></div></div>';
 
   h += '<div class="card" style="padding:12px 8px"><div class="calgrid">';
   WD.forEach(function (w, i) {
     h += '<div class="wd' + (i === 0 ? " sun" : i === 6 ? " sat" : "") + '">' + w + "</div>";
   });
   for (var b = 0; b < lead; b++) h += '<div class="cell blank"></div>';
-  for (d = 1; d <= daysInMonth; d++) {
-    var ds2 = CAL_Y + "-" + pad2(CAL_M) + "-" + pad2(d);
-    var dt = new Date(CAL_Y, CAL_M - 1, d);
+  var d2 = start;
+  while (diffDays(d2, end) >= 0) {
+    var ds2 = ymd(d2);
     var inf2 = dayInfo(ds2);
     var cls = "cell";
-    if (dt.getDay() === 0) cls += " sun"; else if (dt.getDay() === 6) cls += " sat";
+    if (d2.getDay() === 0) cls += " sun"; else if (d2.getDay() === 6) cls += " sat";
     if (hols[ds2]) cls += " hol";
     if (ds2 === td) cls += " today";
     if (ds2 > td) cls += " future";
     var marks = "";
-    if (d === effCloseDay) marks += "💳";
+    if (diffDays(d2, end) === 0) marks += "💳";
     if (weekStartSet[ds2]) marks += "🍚";
+    // 月をまたぐ期間なので、1日だけは「9/1」のように月も出す
+    var dLabel = d2.getDate() === 1 ? (d2.getMonth() + 1) + "/1" : String(d2.getDate());
     h += '<button class="' + cls + '" onclick="openDaySheet(\'' + ds2 + '\')">' +
-      '<span class="d">' + d + "</span>" +
+      '<span class="d">' + dLabel + "</span>" +
       (marks ? '<span class="marks">' + marks + "</span>" : "") +
       '<span class="st">' + (inf2.stamp ? stampHtml(inf2.stamp) : "") + "</span>" +
       (inf2.total > 0 ? '<span class="amt">' + comma(inf2.total) + "</span>" : "") +
       "</button>";
+    d2 = addDays(d2, 1);
   }
   h += "</div>";
   h += '<div class="legend"><span>💮 0円</span><span style="color:var(--sage)">◎ 〜' + comma(st.thresholds[0]) + '</span><span style="color:var(--teal)">○ 〜' + comma(st.thresholds[1]) + '</span><span style="color:var(--amber)">△ 〜' + comma(st.thresholds[2]) + "</span><span>💦 それ以上</span></div>";
@@ -909,7 +920,11 @@ function calShift(n) {
   if (CAL_M === 13) { CAL_M = 1; CAL_Y++; }
   render();
 }
-function calToday() { var t = today(); CAL_Y = t.getFullYear(); CAL_M = t.getMonth() + 1; render(); }
+function calToday() {
+  var p = cardPeriod(today(), DB.settings.cardCloseDay);
+  CAL_Y = p.cy; CAL_M = p.cm;
+  render();
+}
 
 /* ---------- 日別シート ---------- */
 var sheetDate = null;
@@ -1325,7 +1340,7 @@ function renderSettings(fresh) {
   h += '<p class="muted">「判定外」のカテゴリ（医療など）は、スタンプの計算に入りません</p></div>';
 
   h += '<h2 class="sec">日付のルール</h2><div class="card">';
-  h += '<div class="set-row"><div class="lbl">クレカの締め日<small>「締めごと」集計の区切り</small></div><select id="sClose">' + dayOptions(st.cardCloseDay) + "</select></div>";
+  h += '<div class="set-row"><div class="lbl">クレカの締め日<small>「締めごと」集計・カレンダーの月の区切り</small></div><select id="sClose">' + dayOptions(st.cardCloseDay) + "</select></div>";
   h += '<div class="set-row"><div class="lbl">食費週のスタート日<small>土日祝なら前の平日に繰り上げ</small></div><select id="sAnchor">' + dayOptions(st.foodAnchorDay) + "</select></div>";
   h += "</div>";
 
