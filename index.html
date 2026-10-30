@@ -140,7 +140,7 @@ input.amt-input { font-family: var(--font-round); font-weight: 700; font-variant
 .calgrid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
 .calgrid .wd { text-align: center; font-size: .66rem; font-weight: 700; color: var(--ink-soft); padding: 3px 0 5px; }
 .calgrid .wd.sun { color: var(--rose-deep); } .calgrid .wd.sat { color: var(--teal-deep); }
-.cell { position: relative; border: none; background: var(--surface); border-radius: 11px; min-height: 52px; padding: 3px 2px 2px; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-family: var(--font-body); }
+.cell { position: relative; border: none; background: var(--surface); border-radius: 11px; min-height: 48px; padding: 2px 2px 1px; cursor: pointer; display: flex; flex-direction: column; align-items: center; font-family: var(--font-body); }
 .cell:active { background: var(--rose-soft); }
 .cell.blank { background: none; box-shadow: none; cursor: default; }
 .cell .d { font-size: .68rem; font-weight: 700; color: var(--ink); line-height: 1.2; }
@@ -152,9 +152,40 @@ input.amt-input { font-family: var(--font-round); font-weight: 700; font-variant
 .cell .st.t-nijuu { color: var(--sage); } .cell .st.t-maru { color: var(--teal); } .cell .st.t-sankaku { color: var(--amber); }
 .cell .marks { position: absolute; top: 2px; right: 3px; font-size: .5rem; line-height: 1.1; display: flex; gap: 1px; }
 .cell .amt { font-size: .52rem; color: var(--ink-soft); font-family: var(--font-round); font-variant-numeric: tabular-nums; }
-.legend { display: flex; flex-wrap: wrap; gap: 8px 12px; justify-content: center; margin-top: 10px; font-size: .68rem; color: var(--ink-soft); font-weight: 700; }
-.calsum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
-.calsum .b { background: var(--surface); border-radius: 13px; box-shadow: var(--shadow-sm); padding: 9px 6px; text-align: center; }
+.legend { display: flex; flex-wrap: wrap; gap: 2px 10px; justify-content: center; margin-top: 6px; font-size: .62rem; color: var(--ink-soft); font-weight: 700; }
+.dn { padding: 8px 12px; margin-bottom: 8px; }
+.dn-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.dn-t { font-family: var(--font-round); font-weight: 800; font-size: .86rem; }
+.dn-info { border: none; background: var(--sage-soft); color: var(--sage); border-radius: 99px; padding: 3px 9px; font-size: .68rem; font-weight: 700; cursor: pointer; font-family: var(--font-body); }
+.dn-main { display: flex; align-items: center; gap: 9px; margin-top: 3px; }
+.dn-ic { font-size: 1.5rem; flex: none; }
+.dn-tx { flex: 1; min-width: 0; }
+.dn-nm { font-weight: 800; font-size: .98rem; overflow-wrap: anywhere; }
+.dn-pr { font-size: .72rem; color: var(--ink-soft); margin-left: 7px; font-weight: 700; }
+.dn-why { font-size: .7rem; color: var(--ink-soft); }
+.dn-acts { display: flex; gap: 6px; margin-top: 5px; }
+.dn-btn { flex: 1; border: 1.5px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 10px; padding: 5px 2px; font-size: .72rem; font-weight: 700; cursor: pointer; font-family: var(--font-body); }
+.dn-btn.pri { background: var(--rose-soft); border-color: var(--rose); color: var(--rose-deep); }
+.dn-btn:disabled { opacity: .45; cursor: default; }
+.dn-stat { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+.dn-stat div { background: var(--surface-2); border-radius: 12px; padding: 9px 4px; text-align: center; }
+.dn-stat span { display: block; font-size: .62rem; color: var(--ink-soft); font-weight: 700; }
+.dn-tbl { width: 100%; border-collapse: collapse; font-size: .78rem; }
+.dn-tbl th { font-size: .66rem; color: var(--ink-soft); text-align: left; padding: 4px 5px; border-bottom: 1px solid var(--line); }
+.dn-tbl td { padding: 8px 5px; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.store-tbl tr { cursor: pointer; }
+.wd-chips { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+.wd-chips button { border: 1.5px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 10px; padding: 9px 0; font-weight: 700; cursor: pointer; font-family: var(--font-body); }
+.wd-chips button.on { border-color: var(--rose); background: var(--rose-soft); color: var(--rose-deep); }
+.dn-times { display: flex; align-items: center; gap: 8px; }
+.dn-times input { min-width: 0; }
+.dn-rates { display: flex; gap: 4px; }
+.set-row .dn-rates input.mini { width: 46px; padding: 9px 4px; text-align: center; }
+.set-row input.mini[type="time"] { width: 108px; }
+.dn-crowd { display: flex; justify-content: space-between; align-items: center; font-size: .8rem; padding: 6px 0; }
+.dn-crowd button { border: none; background: var(--surface-2); color: var(--ink-soft); border-radius: 8px; padding: 5px 10px; font-size: .72rem; cursor: pointer; }
+.calsum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 6px; }
+.calsum .b { background: var(--surface); border-radius: 13px; box-shadow: var(--shadow-sm); padding: 6px 6px; text-align: center; }
 .calsum .b .v { font-family: var(--font-round); font-weight: 800; font-size: 1.05rem; }
 .calsum .b .t { font-size: .62rem; color: var(--ink-soft); font-weight: 700; }
 
@@ -400,6 +431,12 @@ function isWeekend(d) { return d.getDay() === 0 || d.getDay() === 6; }
 
 /* ---------- 食費週・クレカ締め期間 ---------- */
 function foodAnchor(year, month, anchorDay) {
+  // カレンダーの「給与日」ボタンで指定した日があれば、それを起点にする
+  var manual = DB && DB.paydays ? DB.paydays[year + "-" + pad2(month)] : "";
+  if (manual) return fromYmd(manual);
+  return foodAnchorAuto(year, month, anchorDay);
+}
+function foodAnchorAuto(year, month, anchorDay) {
   var lastDay = new Date(year, month, 0).getDate();
   var d = new Date(year, month - 1, Math.min(anchorDay, lastDay));
   while (isWeekend(d) || isHoliday(d)) d = addDays(d, -1);
@@ -472,7 +509,10 @@ function blank() {
     entries: [],
     zeroDays: [],
     cats: defaultCats(),
-    settings: { thresholds: [1000, 2000, 5000], foodBudget: 0, cardCloseDay: 15, foodAnchorDay: 25 },
+    settings: { thresholds: [1000, 2000, 5000], foodBudget: 10000, cardCloseDay: 15, foodAnchorDay: 25, homeMealCost: 800, eatoutRates: [60, 70, 80], eatoutPerWeek: [1, 2], dinnerTime: "19:00", monthlyFoodCap: 0 },
+    paydays: {},
+    stores: [],
+    dinner: { start: "", days: {}, crowd: [] },
     created: new Date().toISOString()
   };
 }
@@ -529,6 +569,52 @@ function migrate(d) {
   // 0円デーの検疫
   d.zeroDays = d.zeroDays.filter(function (s) { return typeof s === "string" && isRealDate(s); });
   if (typeof s.lastExportAt !== "string") s.lastExportAt = "";
+  // 今日の晩ご飯（v1.3）: 初めて入るときだけ、未設定の週予算を夫婦会議の1万円にする
+  if (!d.dinner || typeof d.dinner !== "object") {
+    if (!(s.foodBudget > 0)) s.foodBudget = 10000;
+    d.dinner = { start: "", days: {}, crowd: [] };
+  }
+  var dn = d.dinner;
+  if (typeof dn.start !== "string" || (dn.start && !isRealDate(dn.start))) dn.start = "";
+  if (!dn.days || typeof dn.days !== "object" || Array.isArray(dn.days)) dn.days = {};
+  if (!dn.closed || typeof dn.closed !== "object" || Array.isArray(dn.closed)) dn.closed = {};
+  Object.keys(dn.closed).forEach(function (k) {
+    var c = dn.closed[k];
+    if (!isRealDate(k) || !c || typeof c.end !== "string" || typeof c.budget !== "number" || !Array.isArray(c.rates) || c.rates.length !== 3) delete dn.closed[k];
+  });
+  Object.keys(dn.days).forEach(function (k) {
+    var r = dn.days[k];
+    var ok = isRealDate(k) && r && typeof r === "object" && Array.isArray(r.steps) && r.steps.length > 0;
+    if (ok) ok = r.steps.every(function (x) { return x && (x.kind === "home" || (x.kind === "store" && typeof x.id === "string" && typeof x.name === "string" && typeof x.price === "number")); });
+    if (!ok) delete dn.days[k];
+    else r.rerolled = !!r.rerolled;
+  });
+  if (!Array.isArray(dn.crowd)) dn.crowd = [];
+  dn.crowd = dn.crowd.filter(function (c) { return c && idOk(c.storeId) && isRealDate(c.date || "") && c.wd >= 0 && c.wd <= 6 && c.slot >= 0 && c.slot <= 2; });
+  if (!d.paydays || typeof d.paydays !== "object" || Array.isArray(d.paydays)) d.paydays = {};
+  Object.keys(d.paydays).forEach(function (k) {
+    if (!/^\d{4}-\d{2}$/.test(k) || !isRealDate(String(d.paydays[k]))) delete d.paydays[k];
+  });
+  if (!Array.isArray(d.stores)) d.stores = [];
+  var sseen = {};
+  d.stores = d.stores.filter(function (x) { return x && typeof x === "object"; });
+  d.stores.forEach(function (x) {
+    if (!idOk(x.id) || sseen[x.id]) x.id = uid();
+    sseen[x.id] = 1;
+    if (typeof x.name !== "string" || !x.name) x.name = "？";
+    x.price = Math.max(0, parseAmt(x.price));
+    if (!Array.isArray(x.closedWd)) x.closedWd = [];
+    x.closedWd = x.closedWd.filter(function (w) { return w >= 0 && w <= 6; });
+    if (!/^\d{2}:\d{2}$/.test(x.open || "")) x.open = "";
+    if (!/^\d{2}:\d{2}$/.test(x.close || "")) x.close = "";
+  });
+  if (typeof s.homeMealCost !== "number" || s.homeMealCost < 0) s.homeMealCost = b.settings.homeMealCost;
+  if (!Array.isArray(s.eatoutRates) || s.eatoutRates.length !== 3) s.eatoutRates = b.settings.eatoutRates;
+  s.eatoutRates = s.eatoutRates.map(function (x) { return Math.min(100, Math.max(0, parseAmt(x))); });
+  if (!Array.isArray(s.eatoutPerWeek) || s.eatoutPerWeek.length !== 2) s.eatoutPerWeek = b.settings.eatoutPerWeek;
+  s.eatoutPerWeek = s.eatoutPerWeek.map(function (x) { return Math.max(0, parseAmt(x)); });
+  if (!/^\d{2}:\d{2}$/.test(s.dinnerTime || "")) s.dinnerTime = b.settings.dinnerTime;
+  if (typeof s.monthlyFoodCap !== "number" || s.monthlyFoodCap < 0) s.monthlyFoodCap = 0;
   return d;
 }
 var DB, _loadFailed = false, _raw = null;
@@ -743,7 +829,7 @@ function viewRecord() {
   if (fw.week) {
     var wSpent = foodSpent(fw.week.start, fw.week.end);
     if (st.foodBudget > 0) {
-      var left = st.foodBudget - wSpent;
+      var left = weekBudget(fw.week) - wSpent;
       h += '<button class="chip-card' + (left < 0 ? " over" : "") + '" onclick="go(\'meet\');MEET_MODE=\'food\';MEET_REF=today();render()">' +
         '<span class="t">🍚 今週の食費のこり</span><span class="v num">' + (left < 0 ? "−" : "") + yen(Math.abs(left)) + "</span>" +
         '<span class="s">' + jdate(ymd(fw.week.start)) + "〜" + jdate(ymd(fw.week.end)) + "</span></button>";
@@ -850,11 +936,12 @@ function viewCal() {
     Object.keys(jpHolidays(end.getFullYear())).forEach(function (k) { hols[k] = 1; });
   }
   // 🍚マーク: 期間内の毎週の食費週スタート日ぜんぶ（期間の起点日も第1週スタートとして含まれる）
-  var weekStartSet = {};
+  var weekStartSet = {}, paydaySet = {};
   var wd0 = start;
   while (diffDays(wd0, end) >= 0) {
     var fw0 = foodWeekOf(wd0, st.foodAnchorDay);
     if (fw0.week && diffDays(fw0.week.start, wd0) === 0) weekStartSet[ymd(wd0)] = fw0.week.idx;
+    if (diffDays(fw0.period.start, wd0) === 0) paydaySet[ymd(wd0)] = 1;
     wd0 = addDays(wd0, 1);
   }
 
@@ -880,7 +967,7 @@ function viewCal() {
     '<div class="b"><div class="v" style="color:var(--sage)">◎' + niju + '</div><div class="t">じょうずな日</div></div>' +
     '<div class="b"><div class="v num">' + yen(mTotal) + '</div><div class="t">この期間の合計</div></div></div>';
 
-  h += '<div class="card" style="padding:12px 8px"><div class="calgrid">';
+  h += '<div class="card" style="padding:8px 8px;margin-bottom:8px"><div class="calgrid">';
   WD.forEach(function (w, i) {
     h += '<div class="wd' + (i === 0 ? " sun" : i === 6 ? " sat" : "") + '">' + w + "</div>";
   });
@@ -896,7 +983,8 @@ function viewCal() {
     if (ds2 > td) cls += " future";
     var marks = "";
     if (diffDays(d2, end) === 0) marks += "💳";
-    if (weekStartSet[ds2]) marks += "🍚";
+    if (paydaySet[ds2]) marks += "💴";
+    else if (weekStartSet[ds2]) marks += "🍚";
     // 月をまたぐ期間なので、1日だけは「9/1」のように月も出す
     var dLabel = d2.getDate() === 1 ? (d2.getMonth() + 1) + "/1" : String(d2.getDate());
     h += '<button class="' + cls + '" onclick="openDaySheet(\'' + ds2 + '\')">' +
@@ -909,9 +997,9 @@ function viewCal() {
   }
   h += "</div>";
   h += '<div class="legend"><span>💮 0円</span><span style="color:var(--sage)">◎ 〜' + comma(st.thresholds[0]) + '</span><span style="color:var(--teal)">○ 〜' + comma(st.thresholds[1]) + '</span><span style="color:var(--amber)">△ 〜' + comma(st.thresholds[2]) + "</span><span>💦 それ以上</span></div>";
-  h += '<div class="legend" style="margin-top:4px"><span>💳 締め日</span><span>🍚 食費週スタート</span></div>';
+  h += '<div class="legend" style="margin-top:2px"><span>💳 締め日</span><span>🍚 食費週スタート</span><span>💴 給与日</span></div>';
   h += "</div>";
-  h += '<p class="muted" style="text-align:center">日付をタップすると、その日の記録を見たり直したりできます</p>';
+  h += dinnerCardHtml();
   return h;
 }
 function calShift(n) {
@@ -950,7 +1038,395 @@ function daySheetHtml(dateStr) {
   if (!info.list.length || isZero) {
     h += '<button class="zero-btn' + (isZero ? " on" : "") + '" onclick="toggleZeroDay(\'' + dateStr + '\')">' + (isZero ? "💮 0円デー！（取り消す）" : "💮 この日は何も使わなかった（0円デー）") + "</button>";
   }
+  h += paydayButtonHtml(dateStr);
   return h;
+}
+
+/* ---------- 給与日（食費週の基準日） ---------- */
+// 押した日が「どの月の給与日」かは、自動の起点日がいちばん近い月とする
+// （月ごとの区画が重ならないので、起点の並びが前後に入れ替わらない）
+function paydayKey(dateStr) {
+  var hit = Object.keys(DB.paydays).filter(function (k) { return DB.paydays[k] === dateStr; })[0];
+  if (hit) return hit; // 指定済みの日は、スタート日の設定を変えた後でも取り消せるように
+  var d = fromYmd(dateStr), mi = d.getFullYear() * 12 + d.getMonth();
+  var best = "", bestGap = Infinity;
+  for (var k = mi - 1; k <= mi + 1; k++) {
+    var y = Math.floor(k / 12), m = (k % 12) + 1;
+    var gap = Math.abs(diffDays(d, foodAnchorAuto(y, m, DB.settings.foodAnchorDay)));
+    if (gap < bestGap) { bestGap = gap; best = y + "-" + pad2(m); }
+  }
+  return best;
+}
+function paydayButtonHtml(dateStr) {
+  var key = paydayKey(dateStr), manual = DB.paydays[key] || "";
+  if (manual === dateStr) return '<button class="zero-btn on" onclick="togglePayday(\'' + dateStr + '\')">💴 給与日にしました（取り消す）</button>';
+  var fw = foodWeekOf(fromYmd(dateStr), DB.settings.foodAnchorDay);
+  if (ymd(fw.period.start) === dateStr) return '<p class="muted" style="text-align:center;margin:10px 0 0">💴 この日は給与日です。ここから1週間ごとに区切ります</p>';
+  return '<button class="zero-btn" onclick="togglePayday(\'' + dateStr + '\')">💴 この日を給与日にする</button>';
+}
+function togglePayday(dateStr) {
+  var key = paydayKey(dateStr);
+  var on = DB.paydays[key] !== dateStr;
+  if (on) {
+    var p = key.split("-");
+    var gap = Math.abs(diffDays(fromYmd(dateStr), foodAnchorAuto(+p[0], +p[1], DB.settings.foodAnchorDay)));
+    if (gap > 7 && !confirm("いつもの給与日から" + gap + "日はなれています。この日を給与日にしますか？")) return;
+    DB.paydays[key] = dateStr;
+  } else delete DB.paydays[key];
+  var okSave = save();
+  render();
+  if (okSave) toast(on ? "💴 ここを基準に週を組み直しました" : "給与日の指定を取り消しました");
+  if (sheetDate === dateStr && $("daySheetBody")) refreshDaySheet();
+}
+
+/* ---------- 今日の晩ご飯 ---------- */
+// 成績はきろくから毎回計算する（入力を直せば自動で追従し、ずれた値が残らない）。
+// 変えないものだけ dinner.days に保存＝1日の提案は開き直しても変わらない。
+var DINNER_REC_RATIO = 0.7;  // 週の7割以上の日にきろくがあれば成績に数える（つけ忘れを節約と誤認しない）
+var DINNER_GOOD_USED = 0.7;  // 予算の7割以内で終えた週を「優秀」とする
+var DINNER_HOT_STREAK = 2;   // この週数続けて達成で「好調」＝大きめの報酬
+var DINNER_CHANCE = [0.4, 0.55]; // 外食を出す確率（通常・好調）＝条件を満たしても毎回は出さない
+var DINNER_CROWD_DAYS = 90, DINNER_CROWD_LIMIT = 2; // 直近90日に2回で、その曜日×時間帯を外す
+var SLOT_NAME = ["はやめ（〜17時台）", "ごはんどき（18〜19時台）", "おそめ（20時〜）"];
+var DINNER_WHY = {
+  nostore: "お店を設定から登録すると、外食も提案されます",
+  budget: "週の食費予算を決めると、提案が始まります",
+  pace: "今週はペースを整える週。今日はおうちでほっこり🏠",
+  cap: "今週の外食はここまで。また来週のお楽しみ🌱",
+  gap: "外食の次の日は、おうちごはんで調整",
+  rest: "今日はおうちの日。外食枠がそのぶん育ちます🌱",
+  funds: "今日行けるお店が見つからないので、おうちごはん",
+  fail: "今日はおうちで食べる日に決まりました🏠",
+  reroll: "安いお店が見つからなかったので、おうちごはん",
+  norec: "きのうまでのきろくを入れると、今日の案が決まります"
+};
+var DINNER_RETRY = { nostore: 1, budget: 1, norec: 1 }; // 準備が整えば作り直す仮の案（本物の決定は1日固定）
+function seedRand(s) {
+  var h = 2166136261;
+  for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return function () {
+    h = (h + 0x6D2B79F5) | 0;
+    var t = Math.imul(h ^ (h >>> 15), 1 | h);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function weekBudget(w) { return Math.round(DB.settings.foodBudget * w.days / 7); }
+function dinnerLast(rec) { return rec.steps[rec.steps.length - 1]; }
+function dinnerStoreDays(a, b) { // 期間内で、最終的にお店になった日
+  var sa = ymd(a), sb = ymd(b), out = [];
+  Object.keys(DB.dinner.days).forEach(function (k) {
+    if (k >= sa && k <= sb && dinnerLast(DB.dinner.days[k]).kind === "store") out.push(k);
+  });
+  return out;
+}
+function eatoutOf(dateStr) { // その日に外食カテゴリで実際に使った額
+  return entriesOf(dateStr).reduce(function (sum, e) { return sum + (e.catId === "eatout" ? e.amount : 0); }, 0);
+}
+function dinnerRewardSum(a, b) { // 提案に沿って実際に外食した額（行かなかった日は数えない）
+  return dinnerStoreDays(a, b).reduce(function (sum, k) { return sum + Math.min(dinnerLast(DB.dinner.days[k]).price, eatoutOf(k)); }, 0);
+}
+function recordedDays(w) {
+  var n = 0, d = w.start;
+  while (diffDays(d, w.end) >= 0) { if (dayInfo(ymd(d)).recorded) n++; d = addDays(d, 1); }
+  return n;
+}
+function dinnerRate(grade, prevPeriodOver, rates) {
+  var r = rates || DB.settings.eatoutRates;
+  if (grade === "bad") return r[0];
+  if (grade === "good" && !prevPeriodOver) return r[2];
+  return r[1];
+}
+// 始めた週から順に精算して、外食枠・貯金・連続達成を求める。枠は使うまで繰り越す
+function dinnerLedger() {
+  var st = DB.settings, td = today(), a = st.foodAnchorDay, dn = DB.dinner;
+  if (!dn.start) dn.start = ymd(foodWeekOf(td, a).week.start); // 導入前のきろくは枠に入れない
+  var L = { pool: 0, saved: 0, streak: 0, grade: "", weeks: [] };
+  var periods = {}, startYmd = dn.start;
+  var d = fromYmd(dn.start), guard = 0;
+  while (guard++ < 2000) {
+    var fw = foodWeekOf(d, a), w = fw.week;
+    if (!w || diffDays(w.end, td) <= 0) break;
+    if (ymd(w.start) < startYmd) { d = addDays(w.end, 1); continue; } // 給与日を動かして始めた日より前にかかる週は数えない
+    // 終わった週は、その時点の予算とレートで固定する（設定を変えても過去の枠が動かない）
+    var wKey = ymd(w.start), fixed = dn.closed[wKey];
+    if (!fixed || fixed.end !== ymd(w.end)) fixed = dn.closed[wKey] = { end: ymd(w.end), budget: weekBudget(w), rates: st.eatoutRates.slice() };
+    var pKey = ymd(fw.period.start), prevKey = ymd(foodPeriod(addDays(fw.period.start, -1), a).start);
+    var prevOver = !!(periods[prevKey] && periods[prevKey].full && periods[prevKey].spent > periods[prevKey].budget);
+    var rate = dinnerRate(L.grade, prevOver, fixed.rates);
+    var B = fixed.budget, S = foodSpent(w.start, w.end);
+    var enough = recordedDays(w) >= Math.ceil(w.days * DINNER_REC_RATIO);
+    var over = Math.max(0, S - B);
+    var fromPool = Math.min(L.pool, dinnerRewardSum(w.start, w.end), over); // 報酬の外食は枠から払った分を成績に数えない
+    var graded = S - fromPool;
+    var grade = graded > B ? "bad" : !enough ? "norec" : (graded <= B * DINNER_GOOD_USED ? "good" : "normal");
+    var addPool = 0, addSaved = 0;
+    L.pool -= Math.min(L.pool, over); // オーバー分は枠で埋める
+    if (enough && S < B) {
+      addPool = Math.floor((B - S) * rate / 100);
+      addSaved = B - S - addPool;
+    }
+    L.pool += addPool; L.saved += addSaved;
+    if (!w.partial) { // 短い調整週は、たまたまの買い出しで成績が動かないよう評価に入れない
+      L.streak = grade === "good" || grade === "normal" ? L.streak + 1 : 0;
+      L.grade = grade;
+    }
+    L.weeks.push({ start: ymd(w.start), end: ymd(w.end), budget: B, spent: S, grade: grade, rate: rate, enough: enough, partial: w.partial, addPool: addPool, addSaved: addSaved });
+    if (!periods[pKey]) periods[pKey] = { spent: 0, budget: 0, full: ymd(fw.period.start) >= startYmd };
+    periods[pKey].spent += graded; periods[pKey].budget += B;
+    d = addDays(w.end, 1);
+  }
+  var cw = foodWeekOf(td, a), cwk = cw.week;
+  var cPrevKey = ymd(foodPeriod(addDays(cw.period.start, -1), a).start);
+  var cPrevOver = !!(periods[cPrevKey] && periods[cPrevKey].full && periods[cPrevKey].spent > periods[cPrevKey].budget);
+  var cB = weekBudget(cwk), cS = foodSpent(cwk.start, td);
+  var cReward = dinnerRewardSum(cwk.start, addDays(td, -1));
+  var hot = L.streak >= DINNER_HOT_STREAK;
+  var firstDay = diffDays(cwk.start, td) === 0, missing = false;
+  for (var md = cwk.start; diffDays(md, td) > 0; md = addDays(md, 1)) if (!dayInfo(ymd(md)).recorded) missing = true;
+  L.cur = {
+    firstDay: firstDay, missing: missing,
+    period: cw.period, week: cwk, budget: cB, spent: cS, hot: hot,
+    rate: dinnerRate(L.grade, cPrevOver),
+    onPace: cB > 0 && cS - Math.min(L.pool, cReward) <= cB * (diffDays(cwk.start, td) + 1) / cwk.days,
+    eatouts: dinnerStoreDays(cwk.start, addDays(td, -1)).filter(function (k) { return eatoutOf(k) > 0; }).length,
+    cap: st.eatoutPerWeek[hot ? 1 : 0],
+    funds: L.pool + cB - cS - st.homeMealCost * diffDays(td, cwk.end) // 今週の残りを家で食べても足りる額
+  };
+  return L;
+}
+function dinnerMax(L, dateStr) {
+  var c = L.cur, max = c.funds, cap = DB.settings.monthlyFoodCap;
+  if (cap > 0) max = Math.min(max, cap - foodSpent(c.period.start, fromYmd(dateStr)));
+  return max;
+}
+function storeOpenAt(x, wd, t) {
+  if (x.closedWd.indexOf(wd) >= 0) return false;
+  if (x.open && x.close) return x.open <= x.close ? (t >= x.open && t < x.close) : (t >= x.open || t < x.close);
+  if (x.open) return t >= x.open;
+  if (x.close) return t < x.close;
+  return true;
+}
+function slotOf(t) { return t < "18:00" ? 0 : t < "20:00" ? 1 : 2; }
+function crowdCount(storeId, wd, slot, dateStr) {
+  var from = ymd(addDays(fromYmd(dateStr), -DINNER_CROWD_DAYS));
+  return DB.dinner.crowd.filter(function (c) {
+    return c.storeId === storeId && c.wd === wd && c.slot === slot && c.date >= from && c.date <= dateStr;
+  }).length;
+}
+function dinnerCands(dateStr, max, exclude, atTime) {
+  var wd = fromYmd(dateStr).getDay(), t = DB.settings.dinnerTime, slot = slotOf(t);
+  return DB.stores.filter(function (x) {
+    return x.price > 0 && x.price <= max && (exclude || []).indexOf(x.id) < 0 && storeOpenAt(x, wd, atTime || t) &&
+      crowdCount(x.id, wd, slot, dateStr) < DINNER_CROWD_LIMIT;
+  }).sort(function (p, q) { return p.price - q.price; });
+}
+function dinnerNowTime() { // 行けなかった後の案は、いま開いている店から選ぶ
+  var n = new Date(), t = pad2(n.getHours()) + ":" + pad2(n.getMinutes());
+  return t > DB.settings.dinnerTime ? t : DB.settings.dinnerTime;
+}
+function storeStep(x, extra) {
+  var s = { kind: "store", id: x.id, name: x.name, price: x.price };
+  if (extra) s.rerolled = true;
+  return s;
+}
+function dinnerFirstStep(dateStr, L) {
+  var c = L.cur;
+  if (!(DB.settings.foodBudget > 0)) return { kind: "home", why: "budget" };
+  if (!DB.stores.length) return { kind: "home", why: "nostore" };
+  if (c.missing) return { kind: "home", why: "norec" };
+  // 週の初日はまだペースが測れないので、前週の成績で決める
+  if (c.firstDay && (L.grade === "bad" || !L.weeks.length)) return { kind: "home", why: "pace" };
+  if (!c.onPace) return { kind: "home", why: "pace" };
+  if (c.eatouts >= c.cap) return { kind: "home", why: "cap" };
+  var yd = DB.dinner.days[ymd(addDays(fromYmd(dateStr), -1))];
+  if (yd && dinnerLast(yd).kind === "store") return { kind: "home", why: "gap" };
+  var rnd = seedRand(dateStr + "|first");
+  if (rnd() >= DINNER_CHANCE[c.hot ? 1 : 0]) return { kind: "home", why: "rest" };
+  var cs = dinnerCands(dateStr, dinnerMax(L, dateStr));
+  if (!cs.length) return { kind: "home", why: "funds" };
+  // 通常は安いほう半分、好調なら高いほう半分（大きめの報酬）から選ぶ
+  var half = Math.ceil(cs.length / 2);
+  var pool = c.hot ? cs.slice(cs.length - half) : cs.slice(0, half);
+  return storeStep(pool[Math.floor(rnd() * pool.length)]);
+}
+function ensureDinner() {
+  var td = ymd(today()), rec = DB.dinner.days[td];
+  if (rec && !(rec.steps.length === 1 && DINNER_RETRY[rec.steps[0].why])) return rec;
+  var L = dinnerLedger();
+  var first = dinnerFirstStep(td, L);
+  if (rec && rec.steps[0].why === first.why) return rec;
+  rec = { steps: [first], rerolled: false };
+  DB.dinner.days[td] = rec;
+  save();
+  return rec;
+}
+function dinnerCardHtml() {
+  var rec = ensureDinner(), s = dinnerLast(rec), L = dinnerLedger(), c = L.cur;
+  var isStore = s.kind === "store";
+  var why = isStore ? (s.rerolled ? "選び直しの結果です。今日はここで決まり！" : rec.steps.length > 1 ? "第" + rec.steps.length + "案です。ここへ行こう！" : (c.hot ? "好調のごほうび！たのしんで🎉" : "がんばったごほうび！たのしんで🌸")) : (DINNER_WHY[s.why] || DINNER_WHY.fail);
+  var h = '<div class="card dn"><div class="dn-top"><span class="dn-t">🍽 今日の晩ご飯</span>' +
+    '<button class="dn-info" onclick="openDinnerInfo()">外食枠 <b class="num">' + yen(L.pool) + "</b> ›</button></div>";
+  h += '<div class="dn-main"><div class="dn-ic">' + (isStore ? "🍜" : "🏠") + '</div><div class="dn-tx"><div class="dn-nm">' + (isStore ? esc(s.name) : "家で食べる") +
+    (isStore ? '<span class="num dn-pr">目安' + yen(s.price) + "</span>" : "") + '</div><div class="dn-why">' + why + "</div></div></div>";
+  if (s.why === "nostore") h += '<button class="dn-btn" style="width:100%;margin-top:7px" onclick="openSettings()">🏪 お店を登録する</button>';
+  else {
+    var canReroll = isStore && !rec.rerolled && rec.steps.length === 1; // 第2案のあとは使えない（第3案は必ず家）
+    var done = isStore && dinnerRecorded(s);
+    h += '<div class="dn-acts">';
+    if (isStore) h += '<button class="dn-btn" onclick="openDinnerFail()">🙇 行けなかった</button>';
+    h += '<button class="dn-btn" ' + (canReroll ? 'onclick="openDinnerReroll()"' : "disabled") + ">🔀 選び直し" + (rec.rerolled ? "（済）" : "") + "</button>";
+    if (isStore) h += done ? '<button class="dn-btn" disabled>きろく済み</button>' : '<button class="dn-btn pri" onclick="dinnerRecord()">きろく</button>';
+    h += "</div>";
+  }
+  return h + "</div>";
+}
+function dinnerRecorded(s) {
+  return entriesOf(ymd(today())).some(function (e) { return e.memo === s.name; });
+}
+function dinnerRender() { // カードはカレンダーの下にあるので、結果が見えるよう位置を保つ
+  var y = window.scrollY;
+  render();
+  window.scrollTo(0, y);
+}
+function dinnerRecord() {
+  var s = dinnerLast(ensureDinner());
+  if (s.kind !== "store" || dinnerRecorded(s)) return;
+  openEntrySheet(null, ymd(today()));
+  if (DB.cats.some(function (x) { return x.id === "eatout"; })) pickEditCat("eatout");
+  $("fAmt").value = comma(s.price);
+  $("fMemo").value = s.name;
+}
+function openDinnerFail() {
+  var h = "<h3>🙇 お店に行けなかった</h3>" +
+    '<p class="muted" style="margin:-6px 0 12px">理由をえらぶと、次の案を出します。第3案は必ず「家で食べる」です</p>' +
+    '<button class="menu-row" onclick="dinnerFail(\'crowd\')"><span class="mi">🕰</span>混んでいて入れない<span class="mc">›</span></button>' +
+    '<button class="menu-row" onclick="dinnerFail(\'closed\')"><span class="mi">🚪</span>お休みだった<span class="mc">›</span></button>' +
+    '<button class="menu-row" onclick="dinnerFail(\'other\')"><span class="mi">💭</span>そのほかの事情<span class="mc">›</span></button>' +
+    '<button class="btn ghost" style="width:100%" onclick="closeModal()">やめる</button>';
+  showModal(h);
+}
+function dinnerTried(rec) {
+  return rec.steps.filter(function (x) { return x.kind === "store"; }).map(function (x) { return x.id; });
+}
+function dinnerFail(reason) {
+  var td = ymd(today()), rec = ensureDinner(), s = dinnerLast(rec);
+  if (s.kind !== "store") { closeModal(); return; }
+  if (reason === "crowd") {
+    // 提案で照合する時間帯と同じ物差しで残す（押した時刻だと20時すぎの報告が数えられない）
+    DB.dinner.crowd.push({ storeId: s.id, date: td, wd: fromYmd(td).getDay(), slot: slotOf(DB.settings.dinnerTime) });
+  }
+  var next = { kind: "home", why: "fail" }, tried = dinnerTried(rec);
+  if (!rec.rerolled && tried.length < 2) {
+    var L = dinnerLedger();
+    // 好調でない週は、第2案で元の店より高い店へ上がらない
+    var cs = dinnerCands(td, L.cur.hot ? dinnerMax(L, td) : Math.min(s.price, dinnerMax(L, td)), tried, dinnerNowTime());
+    if (cs.length) next = storeStep(cs[Math.floor(seedRand(td + "|fail").call() * cs.length)]);
+  }
+  rec.steps.push(next);
+  var okSave = save(); closeModal(); dinnerRender();
+  if (okSave) toast(next.kind === "store" ? "第2案は " + next.name + " です" : "今日は家で食べる日に決まりました🏠");
+}
+function openDinnerReroll() {
+  var h = "<h3>🔀 選び直し</h3>" +
+    '<p style="font-size:.86rem;line-height:1.7;margin:0 0 12px">いまのお店より<b>安いお店</b>から1回だけ選び直します。<br>今日はもう押せません。選び直した先に行けなければ、家で食べる日になります。</p>' +
+    '<div class="sheet-actions"><button class="btn ghost" onclick="closeModal()">やめる</button><button class="btn primary" onclick="dinnerReroll()">選び直す</button></div>';
+  showModal(h);
+}
+function dinnerReroll() {
+  var td = ymd(today()), rec = ensureDinner(), s = dinnerLast(rec);
+  if (s.kind !== "store" || rec.rerolled || rec.steps.length !== 1) { closeModal(); return; }
+  var cs = dinnerCands(td, Math.min(s.price - 1, dinnerMax(dinnerLedger(), td)), dinnerTried(rec), dinnerNowTime());
+  rec.rerolled = true;
+  var next = cs.length ? storeStep(cs[Math.floor(seedRand(td + "|reroll").call() * cs.length)], true) : { kind: "home", why: "reroll" };
+  rec.steps.push(next);
+  var okSave = save(); closeModal(); dinnerRender();
+  if (okSave) toast(next.kind === "store" ? "選び直し：" + next.name + " です🔀" : "今日は家で食べる日に決まりました🏠");
+}
+function openDinnerInfo() {
+  var L = dinnerLedger(), c = L.cur, st = DB.settings, GN = { good: "優秀💮", normal: "達成◎", bad: "もう一歩💦" };
+  var h = "<h3>🍽 今週の成績</h3>" +
+    '<div class="dn-stat"><div><span>今週ののこり</span><b class="num">' + (c.budget < c.spent ? "−" : "") + yen(Math.abs(c.budget - c.spent)) + "</b></div><div><span>外食枠</span><b class=\"num\">" + yen(L.pool) + "</b></div><div><span>貯金にまわした分</span><b class=\"num\">" + yen(L.saved) + "</b></div></div>";
+  h += '<p class="muted" style="margin:10px 0">連続達成 ' + L.streak + "週" + (c.hot ? "（好調🔥）" : "") + "／今週ぶんの外食レート " + c.rate + "％／今週の外食 " + (c.eatouts + (dinnerLast(ensureDinner()).kind === "store" ? 1 : 0)) + "回（上限" + c.cap + "回）</p>";
+  if (L.weeks.length) {
+    h += '<table class="dn-tbl"><tr><th>週</th><th>つかった</th><th>成績</th><th>枠へ</th></tr>';
+    L.weeks.slice(-5).reverse().forEach(function (w) {
+      h += "<tr><td>" + jdate(w.start) + '〜</td><td class="num">' + yen(w.spent) + "</td><td>" + (w.grade === "norec" ? "きろく不足" : w.partial ? "調整週" : GN[w.grade]) + '</td><td class="num">' + yen(w.addPool) + "</td></tr>";
+    });
+    h += "</table>";
+  } else {
+    h += '<p class="muted">最初の1週間が終わると、ここに成績がならびます</p>';
+  }
+  h += '<p class="muted" style="margin-top:10px">週のペース＝予算' + yen(st.foodBudget) + "×経過日数÷7。浮いた分の" + c.rate + "％が枠へ、のこりが貯金へまわります。週の7割以上の日にきろくがないと、繰り越しはつきません</p>";
+  h += '<button class="btn ghost" style="width:100%;margin-top:6px" onclick="closeModal()">とじる</button>';
+  showModal(h);
+}
+
+/* ---------- お店リスト ---------- */
+var editStoreId = null;
+function storeRowsHtml() {
+  if (!DB.stores.length) return '<p class="muted" style="margin:6px 0">まだお店がありません。登録すると提案に入ります</p>';
+  return '<table class="dn-tbl store-tbl"><tr><th>お店</th><th>目安</th><th>定休</th></tr>' + DB.stores.map(function (x) {
+    var off = x.closedWd.slice().sort().map(function (w) { return WD[w]; }).join("・") || "なし";
+    return '<tr onclick="openStoreSheet(\'' + x.id + '\')"><td>' + esc(x.name) + '</td><td class="num">' + yen(x.price) + "</td><td>" + off + "</td></tr>";
+  }).join("") + "</table>";
+}
+function openStoreSheet(storeId) {
+  editStoreId = storeId;
+  var x = storeId ? DB.stores.find(function (y) { return y.id === storeId; }) : null;
+  var h = "<h3>" + (x ? "お店をなおす" : "お店を追加") + "</h3>";
+  h += '<div class="field"><label>店名</label><input type="text" id="stName" value="' + esc(x ? x.name : "") + '" autocomplete="off"></div>';
+  h += '<div class="field"><label>目安の金額（ふたり分）</label><input type="text" id="stPrice" class="amt-input" inputmode="numeric" placeholder="0" value="' + (x && x.price ? comma(x.price) : "") + '" autocomplete="off"></div>';
+  h += '<div class="field"><label>定休日（タップで切りかえ）</label><div class="wd-chips" id="stClosed">' + WD.map(function (w, i) {
+    return '<button type="button" data-wd="' + i + '" class="' + (x && x.closedWd.indexOf(i) >= 0 ? "on" : "") + '" onclick="this.classList.toggle(\'on\')">' + w + "</button>";
+  }).join("") + "</div></div>";
+  h += '<div class="field"><label>夜の営業時間（空欄なら時間を見ません）</label><div class="dn-times"><input type="time" id="stOpen" value="' + (x ? x.open : "") + '"><span>〜</span><input type="time" id="stClose" value="' + (x ? x.close : "") + '"></div></div>';
+  if (x) h += '<div id="stCrowd">' + crowdListHtml(x) + "</div>";
+  h += '<div class="sheet-actions"><button class="btn ghost" onclick="closeModal()">やめる</button><button class="btn primary" onclick="saveStore()">保存</button></div>';
+  if (x) h += '<button class="btn del" onclick="deleteStore()">このお店を削除する</button>';
+  showModal(h);
+  $("stPrice").addEventListener("input", function () { var n = parseAmt(this.value); this.value = n ? comma(n) : ""; });
+}
+function crowdListHtml(x) {
+  var groups = {}, td = ymd(today());
+  DB.dinner.crowd.forEach(function (c) { if (c.storeId === x.id) groups[c.wd + "-" + c.slot] = c; });
+  var keys = Object.keys(groups);
+  if (!keys.length) return "";
+  var h = '<div class="field"><label>混雑のきろく（2回で提案から外れます）</label>';
+  keys.forEach(function (k) {
+    var c = groups[k], n = crowdCount(x.id, c.wd, c.slot, td);
+    h += '<div class="dn-crowd"><span>' + WD[c.wd] + "曜・" + SLOT_NAME[c.slot] + " " + n + '回</span><button type="button" onclick="clearCrowd(\'' + x.id + "'," + c.wd + "," + c.slot + ')">消す</button></div>';
+  });
+  return h + "</div>";
+}
+function clearCrowd(storeId, wd, slot) {
+  DB.dinner.crowd = DB.dinner.crowd.filter(function (c) { return !(c.storeId === storeId && c.wd === wd && c.slot === slot); });
+  save();
+  // シート全体は作り直さない（編集中の店名や金額を消さないため）
+  $("stCrowd").innerHTML = crowdListHtml(DB.stores.find(function (y) { return y.id === storeId; }));
+}
+function saveStore() {
+  var name = $("stName").value.trim(), price = parseAmt($("stPrice").value);
+  if (!name) { toast("店名を入れてね"); return; }
+  if (!price) { toast("目安の金額を入れてね"); return; }
+  var closed = [];
+  Array.prototype.forEach.call($("stClosed").querySelectorAll("button.on"), function (b) { closed.push(+b.getAttribute("data-wd")); });
+  var open = $("stOpen").value, close = $("stClose").value;
+  if (editStoreId) {
+    var x = DB.stores.find(function (y) { return y.id === editStoreId; });
+    if (x) { x.name = name; x.price = price; x.closedWd = closed; x.open = open; x.close = close; }
+  } else {
+    DB.stores.push({ id: uid(), name: name, price: price, closedWd: closed, open: open, close: close });
+  }
+  var okSave = save(); closeModal();
+  if (okSave) toast("保存しました🌸");
+  renderSettings();
+}
+function deleteStore() {
+  if (!confirm("このお店を削除しますか？")) return;
+  DB.stores = DB.stores.filter(function (x) { return x.id !== editStoreId; });
+  DB.dinner.crowd = DB.dinner.crowd.filter(function (c) { return c.storeId !== editStoreId; });
+  save(); closeModal(); renderSettings();
 }
 
 /* ---------- 記録の追加・編集シート ---------- */
@@ -1127,16 +1603,16 @@ function meetFoodHtml(p) {
   p.weeks.forEach(function (w) {
     var spent = foodSpent(w.start, w.end);
     var isNow = diffDays(w.start, tdy) >= 0 && diffDays(tdy, w.end) >= 0;
-    var over = spent > st.foodBudget;
-    var pct = Math.min(100, Math.round(spent / st.foodBudget * 100));
+    var wb = weekBudget(w); // 短い週は日割り＝今日の晩ご飯の判定と同じ額
+    var over = spent > wb;
+    var pct = Math.min(100, Math.round(spent / wb * 100));
     var label = "第" + w.idx + "週" + (w.partial ? "（調整週・" + w.days + "日）" : "");
-    var prorated = w.partial ? Math.round(st.foodBudget * w.days / 7) : 0;
     h += '<div class="wk-row' + (over ? " over" : "") + (isNow ? " now" : "") + '">' +
       '<div class="l"><span>' + label + (isNow ? " 🐣いまここ" : "") + '</span><span class="d">' + jdate(ymd(w.start)) + "〜" + jdate(ymd(w.end)) + "</span></div>" +
       '<div class="bar"><i style="width:' + (spent > 0 ? Math.max(pct, 2) : 0) + '%"></i></div>' +
-      '<div class="l" style="margin-top:3px"><span class="num" style="font-weight:800">' + yen(spent) + '<span class="muted"> / ' + yen(st.foodBudget) + "</span></span>" +
-      "<span>" + (over ? '<b style="color:var(--rose-deep)">' + yen(spent - st.foodBudget) + "オーバー</b>" : '<b style="color:var(--sage)">のこり' + yen(st.foodBudget - spent) + "</b>") + "</span></div>" +
-      (w.partial ? '<div class="muted" style="margin-top:2px">' + w.days + "日ぶんの日割りめやす＝" + yen(prorated) + "</div>" : "") + "</div>";
+      '<div class="l" style="margin-top:3px"><span class="num" style="font-weight:800">' + yen(spent) + '<span class="muted"> / ' + yen(wb) + "</span></span>" +
+      "<span>" + (over ? '<b style="color:var(--rose-deep)">' + yen(spent - wb) + "オーバー</b>" : '<b style="color:var(--sage)">のこり' + yen(wb - spent) + "</b>") + "</span></div>" +
+      (w.partial ? '<div class="muted" style="margin-top:2px">' + w.days + "日ぶんの日割り予算です</div>" : "") + "</div>";
   });
   h += "</div>";
   return h;
@@ -1202,6 +1678,8 @@ function closeModal() {
   document.activeElement && document.activeElement.blur();
   $("modalRoot").innerHTML = "";
   sheetDate = null;
+  // シートを開いたまま日付が変わっていたら、閉じたときに今日の表示へ
+  if (ymd(today()) !== lastDay) { lastDay = ymd(today()); render(); }
 }
 
 /* ---------- ☰メニュー ---------- */
@@ -1312,6 +1790,13 @@ function applySettings(fromClose) {
   st.foodBudget = parseAmt($("sBudget").value);
   st.cardCloseDay = +$("sClose").value;
   st.foodAnchorDay = +$("sAnchor").value;
+  // 空欄で閉じたときは0にせず元の値を残す（月の上限だけは空欄＝未設定）
+  function numOr(id, old) { var v = $(id).value.trim(); return v === "" ? old : parseAmt(v); }
+  st.homeMealCost = numOr("sHome", st.homeMealCost);
+  st.monthlyFoodCap = parseAmt($("sCap").value);
+  st.eatoutRates = ["sRate0", "sRate1", "sRate2"].map(function (id, i) { return Math.min(100, numOr(id, st.eatoutRates[i])); });
+  st.eatoutPerWeek = [numOr("sWk0", st.eatoutPerWeek[0]), numOr("sWk1", st.eatoutPerWeek[1])];
+  if (/^\d{2}:\d{2}$/.test($("sTime").value)) st.dinnerTime = $("sTime").value;
   if (validT) st.thresholds = [t0, t1, t2];
   else if (fromClose) toast("しきい値は順序が正しくないため元のままにしました");
   applySettings.lastSaveOk = save();
@@ -1323,12 +1808,22 @@ function renderSettings(fresh) {
   // fresh=true（開き直し）のときはDBの値から素直に作る
   var keep = {};
   if (!fresh) {
-    ["sBudget", "sT0", "sT1", "sT2", "sClose", "sAnchor"].forEach(function (id) { var el = $(id); if (el) keep[id] = el.value; });
+    ["sBudget", "sT0", "sT1", "sT2", "sClose", "sAnchor", "sHome", "sCap", "sRate0", "sRate1", "sRate2", "sWk0", "sWk1", "sTime"].forEach(function (id) { var el = $(id); if (el) keep[id] = el.value; });
   }
   var st = DB.settings;
   var h = '<h2 class="sec">🍚 食費の週予算</h2><div class="card">';
   h += '<div class="set-row"><div class="lbl">1週間の食費予算<small>毎月' + st.foodAnchorDay + '日ごろスタートの週ルール</small></div>' +
     '<input class="mini" type="text" inputmode="numeric" id="sBudget" value="' + (st.foodBudget ? comma(st.foodBudget) : "") + '" placeholder="未設定"></div>';
+  h += "</div>";
+
+  h += '<h2 class="sec">🍽 今日の晩ご飯</h2><div class="card">';
+  h += storeRowsHtml();
+  h += '<button class="add-dash" onclick="openStoreSheet(null)">＋ お店を追加</button>';
+  h += '<div class="set-row" style="margin-top:6px"><div class="lbl">家ごはん1食の金額</div><input class="mini" type="text" inputmode="numeric" id="sHome" value="' + comma(st.homeMealCost) + '"></div>';
+  h += '<div class="set-row"><div class="lbl">晩ご飯の時間<small>この時間に開いているお店だけ提案します</small></div><input class="mini" type="time" id="sTime" value="' + st.dinnerTime + '"></div>';
+  h += '<div class="set-row"><div class="lbl">外食レート（％）<small>左から 不調／ふつう／優秀</small></div><div class="dn-rates"><input class="mini" inputmode="numeric" id="sRate0" value="' + st.eatoutRates[0] + '"><input class="mini" inputmode="numeric" id="sRate1" value="' + st.eatoutRates[1] + '"><input class="mini" inputmode="numeric" id="sRate2" value="' + st.eatoutRates[2] + '"></div></div>';
+  h += '<div class="set-row"><div class="lbl">週の外食の上限（回）<small>左から ふつう／好調</small></div><div class="dn-rates"><input class="mini" inputmode="numeric" id="sWk0" value="' + st.eatoutPerWeek[0] + '"><input class="mini" inputmode="numeric" id="sWk1" value="' + st.eatoutPerWeek[1] + '"></div></div>';
+  h += '<div class="set-row"><div class="lbl">月の食費の上限<small>給与日からの1か月。空欄なら見ません</small></div><input class="mini" type="text" inputmode="numeric" id="sCap" value="' + (st.monthlyFoodCap ? comma(st.monthlyFoodCap) : "") + '" placeholder="未設定"></div>';
   h += "</div>";
 
   h += '<h2 class="sec">スタンプのしきい値</h2><div class="card">';
@@ -1356,7 +1851,7 @@ function renderSettings(fresh) {
 
   h += '<button class="btn primary" style="margin-top:6px" onclick="saveSettings()">設定を保存</button>';
   $("setBody").innerHTML = h;
-  ["sBudget", "sT0", "sT1", "sT2"].forEach(function (id) {
+  ["sBudget", "sT0", "sT1", "sT2", "sHome", "sCap"].forEach(function (id) {
     var el = $(id);
     el.addEventListener("input", function () { var n = parseAmt(this.value); this.value = n ? comma(n) : ""; });
   });
@@ -1492,7 +1987,7 @@ function restoreBackup(key) {
     if (!v || !v.json) { toast("この控えは読めませんでした"); return; }
     var d;
     try { d = migrate(JSON.parse(v.json)); } catch (e) { toast("この控えは読めませんでした"); return; }
-    if (!confirm("「" + bkLabel(key) + "」（きろく" + (v.n || 0) + "件）に置き換えます。よろしいですか？")) return;
+    if (!confirm("「" + bkLabel(key) + "」（きろく" + (v.n || 0) + "件）に置き換えます。お店リストや給与日の指定も、その時点にもどります。よろしいですか？")) return;
     idbPut("pre-restore", { json: JSON.stringify(DB), at: Date.now(), n: recCount(DB) });
     DB = d;
     if (save()) toast("🛟 復元しました");
@@ -1516,7 +2011,7 @@ function importData() {
   var d;
   try { d = JSON.parse(text); } catch (e) { toast("データの形が読めませんでした"); return; }
   if (!d || typeof d !== "object" || !Array.isArray(d.entries)) { toast("おしどり帳のデータではないみたい"); return; }
-  if (!confirm("いまの記録を置き換えて読み込みます。よろしいですか？")) return;
+  if (!confirm("いまの記録を置き換えて読み込みます。お店リストや給与日の指定も読み込むデータの内容になります。よろしいですか？")) return;
   var nd;
   try { nd = migrate(d); } catch (e) { toast("データの中身が読めませんでした（いまの記録は無事です）"); return; }
   // 置き換える直前の状態を控えに残す（まちがえてももどせる）
@@ -1556,7 +2051,12 @@ function renderHelp() {
     '<div class="stamp-sample"><span class="s">💦</span>それより上</div>' +
     '<p class="muted">きんがくは設定でかえられます。医療など「仕方ない出費」はスタンプ判定に入りません。</p></div>' +
     '<div class="card"><h3 style="margin-top:0">📅 カレンダー</h3>' +
-    "<p>日付をタップすると、その日のきろくを見たり、あとから直したりできます。💳は締め日、🍚は食費週のスタートの目じるしです。</p></div>" +
+    "<p>日付をタップすると、その日のきろくを見たり、あとから直したりできます。💳は締め日、🍚は食費週のスタート、💴は給与日の目じるしです。</p>" +
+    "<p>給与日が前にずれた月は、その日をタップして「この日を給与日にする」を押すと、そこから1週間ごとに組み直します。iPhoneカレンダーへ登録した通知は自動では動かないので、登録し直してください。</p></div>" +
+    '<div class="card"><h3 style="margin-top:0">🍽 今日の晩ご飯</h3>' +
+    "<p>カレンダーの下に、今日の晩ご飯が出ます。出た案がその日の決定です。週のペースを守ると外食のごほうびが出て、続けて達成すると大きめのお店も出ます。</p>" +
+    "<p>お店に行けないときは「行けなかった」を押すと第2案が出ます。第3案は必ず家ごはんです。「選び直し」は1日1回、今のお店より安いお店から選び直します。</p>" +
+    "<p>浮いた食費の一部は外食枠に貯まり、のこりは貯金にまわります。お店は設定から登録できます。</p></div>" +
     '<div class="card"><h3 style="margin-top:0">📊 ふたり会議</h3>' +
     "<p>クレカの締め（" + ((st.cardCloseDay % 31) + 1) + "日〜" + st.cardCloseDay + "日）ごと・食費週ごと・月ごとに、なにに使ったかをふりかえられます。月に1回、ふたりで眺めるのがおすすめ☕</p></div>";
 }
@@ -1601,7 +2101,10 @@ pruneSnaps();
 var lastDay = ymd(today());
 document.addEventListener("visibilitychange", function () {
   if (!document.hidden && ymd(today()) !== lastDay && !$("modalRoot").firstChild) {
-    lastDay = ymd(today()); render();
+    lastDay = ymd(today());
+    // 晩ご飯の案を作ると保存が走るので、別タブの新しいきろくを古い内容で上書きしないよう読み直す
+    try { var fresh = localStorage.getItem(KEY); if (fresh) DB = migrate(JSON.parse(fresh)); } catch (e) {}
+    render();
   }
 });
 
