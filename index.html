@@ -311,6 +311,60 @@ textarea.io { width: 100%; height: 130px; border: 1.5px solid var(--line); backg
 .menu-row:active { transform: scale(.98); }
 .menu-row .mi { width: 36px; height: 36px; border-radius: 11px; background: var(--surface); display: grid; place-items: center; flex: none; box-shadow: var(--shadow-sm); font-size: 1.1rem; }
 .menu-row .mc { margin-left: auto; color: var(--ink-soft); }
+
+/* ---- v1.6 さわり心地（iPhoneのタッチ） ---- */
+/* 素早く続けて押しても画面が拡大されない・押した瞬間に反応する */
+html, button, .cell, .entry-row, .top5-row, .store-tbl tr, .switch, .banner { touch-action: manipulation; }
+/* ボタンや日付を長押ししても、文字の選択や拡大鏡・コピーのメニューを出さない（入力欄は対象外） */
+button, .cell, .entry-row, .top5-row, .store-tbl tr, .chip-card, .switch, .dn-done { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+/* 押した感触：すべての押せるものが、指を置いた瞬間に少し沈む */
+button:not(:disabled):active { transform: scale(.96); }
+.zero-btn:active, .banner:active, .add-dash:active, .bk-row:active, .dn-crowd button:active, .slide .head button:active, .dn-info:active, nav.tabs button:active, .wd-chips button:active, .segwrap button:active, .emoji-grid button:active, .calbar button:active, .periodbar button:active { opacity: .75; }
+.cell:not(.blank):active, .entry-row:active, .top5-row:active, .store-tbl tr:active, .menu-row:active { background: var(--rose-soft); }
+.dn-btn:not(:disabled):active { background: var(--rose-soft); }
+.cell.blank:active { transform: none; }
+/* 指で押しやすい大きさ（44pt前後） */
+.menu-btn { width: 44px; height: 44px; }
+.calbar button { width: 44px; height: 44px; }
+.calbar .todaybtn { height: 44px; }
+.periodbar button { width: 44px; height: 44px; }
+.slide .head button { min-height: 44px; padding: 10px 16px; }
+.wd-chips button { min-height: 44px; }
+.store-tbl td { padding: 13px 5px; }
+.dn-crowd button { min-height: 40px; padding: 8px 14px; }
+.dn-info { min-height: 34px; padding: 6px 12px; font-size: .72rem; }
+/* 今日の晩ご飯カード（毎日かならず案を出す） */
+.dn { padding: 12px 14px; margin-bottom: 14px; }
+.dn-t { font-size: .95rem; }
+.dn-main { margin-top: 8px; }
+.dn-ic { font-size: 1.9rem; }
+.dn-nm { font-size: 1.08rem; }
+.dn-why { margin-top: 2px; line-height: 1.5; }
+.dn-acts { gap: 8px; margin-top: 10px; }
+.dn-btn { min-height: 46px; padding: 8px 4px; font-size: .82rem; border-radius: 12px; }
+.dn-done { width: 100%; margin-top: 10px; min-height: 46px; display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1.5px solid var(--sage); background: var(--sage-soft); color: var(--ink); border-radius: 12px; padding: 8px 12px; font-size: .84rem; font-weight: 700; cursor: pointer; font-family: var(--font-body); text-align: left; }
+.dn-done .dn-fix { color: var(--sage); font-size: .76rem; flex: none; }
+.dn-done:active { opacity: .8; }
+/* 記録シートの「日中／晩ご飯」切りかえ */
+.kindseg { margin-bottom: 14px; }
+.kindseg button { min-height: 44px; font-size: .9rem; }
+/* 入力欄は16px以上（iPhoneがタップのたびに画面を拡大しない） */
+.field input, .field textarea, .set-row input.mini, .set-row select, textarea.io { font-size: 16px; }
+/* シート：裏の画面を動かさない・キーボードが出ても保存ボタンまで届く */
+#modalRoot .modal { overscroll-behavior: contain; height: var(--vvh, 100%); top: var(--vvt, 0px); bottom: auto; }
+#modalRoot .sheet { max-height: 88vh; max-height: min(88dvh, calc(var(--vvh, 100dvh) - 16px)); overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
+#modalRoot .sheet.dragging { transition: none; }
+#modalRoot .sheet.closing { transition: transform .2s ease; }
+.sheet .grip { width: 44px; margin: 4px auto 14px; }
+body.locked { position: fixed; left: 0; right: 0; overflow: hidden; }
+/* 右から出るページ：端までスクロールしても裏が動かない・閉じている間は触れない */
+.slide { overscroll-behavior: contain; visibility: hidden; transition: transform .3s cubic-bezier(.3,1,.4,1), visibility 0s linear .3s; }
+.slide.show { visibility: visible; transition: transform .3s cubic-bezier(.3,1,.4,1); }
+/* 長いお知らせも画面の中で折り返す */
+.toast { white-space: normal; max-width: calc(100vw - 32px); width: max-content; text-align: center; line-height: 1.5; border-radius: 18px; }
+/* 背景のにじみは画面に固定（iPhoneは background-attachment: fixed を無視して、ページごとに模様がずれるため） */
+body { background: transparent; }
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(120% 90% at 92% -8%, var(--rose-soft) 0%, transparent 52%), radial-gradient(120% 90% at 2% 2%, var(--teal-soft) 0%, transparent 42%), var(--bg); }
 </style>
 </head>
 <body>
@@ -356,6 +410,8 @@ textarea.io { width: 100%; height: 130px; border: 1.5px solid var(--line); backg
    データはこのiPhoneの中（localStorage＋IndexedDBの控え）だけに保存されます。
    v1.2 (2026-08-19): データ消失対策＝IndexedDB自動バックアップ・起動時自動復元・
                       控え一覧からの復元・storage.persist()・ブラウザ表示の注意バナー
+   v1.6 (2026-11-05): 晩ご飯カードはいつも案を出す（日中のきろくで「きろく済み」にならない）・
+                      日中／晩ご飯の付けかえ・iPhoneのさわり心地の見直し
    ===================================================== */
 
 /* ---------- 小道具 ---------- */
@@ -372,7 +428,9 @@ function uid() {
 var toastTimer = null;
 function toast(msg) {
   var t = $("toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove("show"); }, 1800);
+  // 注意（⚠️）や長いお知らせは読み切れるよう長めに出す
+  var ms = /⚠️|🛟/.test(msg) || msg.length > 22 ? 4000 : 1800;
+  clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.classList.remove("show"); }, ms);
 }
 
 /* ---------- 日付ユーティリティ ---------- */
@@ -516,7 +574,7 @@ function blank() {
     entries: [],
     zeroDays: [],
     cats: defaultCats(),
-    settings: { thresholds: [1000, 2000, 5000], foodBudget: 10000, cardCloseDay: 15, foodAnchorDay: 25, homeMealCost: 800, eatoutRates: [60, 70, 80], eatoutPerWeek: [1, 2], dinnerTime: "19:00", monthlyFoodCap: 0, showDinner: false },
+    settings: { thresholds: [1000, 2000, 5000], foodBudget: 10000, cardCloseDay: 15, foodAnchorDay: 25, homeMealCost: 800, eatoutRates: [60, 70, 80], eatoutPerWeek: [1, 2], dinnerTime: "19:00", monthlyFoodCap: 0 },
     paydays: {},
     stores: [],
     dinner: { start: "", days: {}, crowd: [] },
@@ -622,7 +680,29 @@ function migrate(d) {
   s.eatoutPerWeek = s.eatoutPerWeek.map(function (x) { return Math.max(0, parseAmt(x)); });
   if (!/^\d{2}:\d{2}$/.test(s.dinnerTime || "")) s.dinnerTime = b.settings.dinnerTime;
   if (typeof s.monthlyFoodCap !== "number" || s.monthlyFoodCap < 0) s.monthlyFoodCap = 0;
-  if (typeof s.showDinner !== "boolean") s.showDinner = false; // 外食の案は初めは隠す（欲に流れないように）
+  // v1.6: 晩ご飯の案はいつも出す（隠すスイッチは廃止）。
+  // 隠していた間（v1.5）も案は裏で毎日作られていた。見ていない案が「昨日は外食」「今週の外食回数」に
+  // 効かないよう、今日より前の見えていなかった案は「家の日」に直す（今日の案はそのまま見せる）
+  // 対象は隠す版（v1.5）を公開した 2026-11-02 以降だけ。それより前（v1.3/1.4）は案が見えていた。
+  // その店の名前で晩ご飯を付けていた日（＝実際に行った日）は触らない
+  if (s.showDinner === false) {
+    var tdKey = ymd(today());
+    Object.keys(dn.days).forEach(function (k) {
+      if (k < "2026-11-02" || k >= tdKey) return;
+      var st0 = dn.days[k].steps.filter(function (x) { return x.kind === "store"; });
+      if (!st0.length) return;
+      var went = d.entries.some(function (e) { return e.date === k && st0.some(function (x) { return x.name === e.memo; }); });
+      if (!went) dn.days[k] = { steps: [{ kind: "home", why: "rest" }], rerolled: false };
+    });
+  }
+  delete s.showDinner;
+  // v1.3 のころ（晩ご飯の印ができる前）にお店の案から付けた晩ご飯＝外食の分類で、メモがその日の案の店名。
+  // これに晩ご飯の印を付けて、一覧・スタンプでも晩ご飯として扱う
+  d.entries.forEach(function (e) {
+    if (e.dinner === true || e.catId !== "eatout" || !e.memo) return;
+    var r = dn.days[e.date];
+    if (r && r.steps.some(function (x) { return x.kind === "store" && x.name === e.memo; })) e.dinner = true;
+  });
   return d;
 }
 var DB, _loadFailed = false, _raw = null;
@@ -726,7 +806,9 @@ function dayInfo(dateStr) {
     if (e.dinner) { dinnerTotal += e.amount; return; }
     if (catById(e.catId).countStamp) counted += e.amount;
   });
-  var recorded = list.length > 0 || DB.zeroDays.indexOf(dateStr) >= 0;
+  // 「記録した日」＝日中の記録があるか、0円デーを押した日。晩ご飯だけの日は日中が未記入なので、
+  // 花丸にもしないし「きのうの記録がまだ」も出す（晩ご飯は毎日きろくボタンが出るので、つけ忘れと見分ける）
+  var recorded = list.some(function (e) { return e.dinner !== true; }) || DB.zeroDays.indexOf(dateStr) >= 0;
   var t = DB.settings.thresholds;
   var stamp = null;
   if (recorded) {
@@ -779,21 +861,25 @@ var MEET_MODE = "card"; // card | food | month
 var MEET_REF = today(); // 期間内の基準日
 var selCatId = "food";  // きろく画面で選択中のカテゴリ
 
-function render() {
+// 描き直しても、いま見ている位置はそのまま（保存・0円デー・晩ご飯のたびに一番上へ飛ばない）。
+// 一番上へ戻すのは、タブや期間を切りかえたとき（toTop=true）だけ
+function render(toTop) {
+  var y = bodyLockY !== null ? bodyLockY : window.scrollY;
   renderNav();
   var v = $("view");
   if (TAB === "record") v.innerHTML = viewRecord();
   else if (TAB === "cal") v.innerHTML = viewCal();
   else v.innerHTML = viewMeet();
   if (TAB === "record") wireRecordForm();
-  window.scrollTo(0, 0);
+  if (toTop) { if (bodyLockY !== null) bodyLockY = 0; else window.scrollTo(0, 0); }
+  else if (bodyLockY === null) window.scrollTo(0, y);
 }
 function renderNav() {
   $("nav").innerHTML = TABS.map(function (t) {
     return '<button class="' + (TAB === t[0] ? "act" : "") + '" onclick="go(\'' + t[0] + '\')"><span class="ic">' + t[1] + "</span>" + t[2] + "</button>";
   }).join("");
 }
-function go(t) { TAB = t; render(); }
+function go(t) { TAB = t; render(true); }
 
 /* ---------- きろく ---------- */
 function viewRecord() {
@@ -821,7 +907,7 @@ function viewRecord() {
   // 今日ヒーロー
   h += '<div class="card hero">';
   h += '<div class="date">' + jdateLong(td) + "</div>";
-  h += '<div class="stamp-big">' + (info.stamp ? stampHtml(info.stamp) : '<span style="font-size:.95rem;color:var(--ink-soft);font-weight:700">きょうの記録はまだ</span>') + "</div>";
+  h += '<div class="stamp-big">' + (info.stamp ? stampHtml(info.stamp) : '<span style="font-size:.95rem;color:var(--ink-soft);font-weight:700">日中のきろくはまだ</span>') + "</div>";
   h += '<div class="split"><div><span>日中</span><b class="num">' + yen(info.dayTotal) + '</b></div><div><span>晩ご飯</span><b class="num">' + yen(info.dinnerTotal) + "</b></div></div>";
   if (info.stamp) h += '<div class="word">' + stampWord(info) + "</div>";
   var sk = streak();
@@ -854,7 +940,10 @@ function viewRecord() {
   h += '<div class="field"><label>きょう使った金額（晩ご飯をのぞく）</label><input type="text" id="qAmt" class="amt-input" inputmode="numeric" placeholder="0" autocomplete="off"></div>';
   h += '<button class="btn primary" onclick="quickAdd()">きろくする</button>';
   var isZero = DB.zeroDays.indexOf(td) >= 0;
-  h += '<button class="zero-btn' + (isZero ? " on" : "") + '" onclick="toggleZeroDay(\'' + td + '\')">' + (isZero ? "💮 きょうは0円デー！（取り消す）" : "💮 きょうは何も使わなかった（0円デー）") + "</button>";
+  // 日中に使った記録がある日は出さない（カレンダーの日別シートと同じ）。晩ご飯だけの日は0円デーにできる
+  if (isZero || !info.list.some(function (e) { return e.dinner !== true; })) {
+    h += '<button class="zero-btn' + (isZero ? " on" : "") + '" onclick="toggleZeroDay(\'' + td + '\')">' + (isZero ? "💮 きょうは0円デー！（取り消す）" : "💮 きょうは何も使わなかった（0円デー）") + "</button>";
+  }
   h += "</div>";
 
   // 今日の記録リスト
@@ -1007,12 +1096,12 @@ function calShift(n) {
   CAL_M += n;
   if (CAL_M === 0) { CAL_M = 12; CAL_Y--; }
   if (CAL_M === 13) { CAL_M = 1; CAL_Y++; }
-  render();
+  render(true);
 }
 function calToday() {
   var p = cardPeriod(today(), DB.settings.cardCloseDay);
   CAL_Y = p.cy; CAL_M = p.cm;
-  render();
+  render(true);
 }
 
 /* ---------- 日別シート ---------- */
@@ -1030,13 +1119,13 @@ function daySheetHtml(dateStr) {
   h += '<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">' +
     '<div style="font-size:34px;min-width:44px;text-align:center" class="' + (info.stamp ? STAMP[info.stamp].cls : "") + '">' + (info.stamp ? stampHtml(info.stamp) : "—") + "</div>" +
     '<div><div class="num" style="font-weight:800;font-size:1.3rem">日中 ' + yen(info.dayTotal) + '</div><div class="num muted">晩ご飯 ' + yen(info.dinnerTotal) + "</div>" +
-    '<div class="muted">' + (info.stamp ? stampWord(info) : "まだ記録がありません") + "</div></div></div>";
+    '<div class="muted">' + (info.stamp ? stampWord(info) : info.list.length ? "日中のきろくはまだです" : "まだ記録がありません") + "</div></div></div>";
   if (info.list.length) {
     info.list.slice().reverse().forEach(function (e) { h += entryRowHtml(e); });
   }
   h += '<button class="btn primary" style="margin-top:8px" onclick="openEntrySheet(null,\'' + dateStr + '\')">＋ この日の出費を追加</button>';
   var isZero = DB.zeroDays.indexOf(dateStr) >= 0;
-  if (!info.list.length || isZero) {
+  if (isZero || !info.list.some(function (e) { return e.dinner !== true; })) {
     h += '<button class="zero-btn' + (isZero ? " on" : "") + '" onclick="toggleZeroDay(\'' + dateStr + '\')">' + (isZero ? "💮 0円デー！（取り消す）" : "💮 この日は何も使わなかった（0円デー）") + "</button>";
   }
   h += paydayButtonHtml(dateStr);
@@ -1121,8 +1210,8 @@ function dinnerStoreDays(a, b) { // 期間内で、最終的にお店になっ�
   });
   return out;
 }
-function eatoutOf(dateStr) { // その日に外食カテゴリで実際に使った額
-  return entriesOf(dateStr).reduce(function (sum, e) { return sum + (e.catId === "eatout" ? e.amount : 0); }, 0);
+function eatoutOf(dateStr) { // その日に晩ご飯（旧版は外食カテゴリ）で実際に使った額
+  return entriesOf(dateStr).reduce(function (sum, e) { return sum + (e.dinner === true || e.catId === "eatout" ? e.amount : 0); }, 0);
 }
 function dinnerRewardSum(a, b) { // 提案に沿って実際に外食した額（行かなかった日は数えない）
   return dinnerStoreDays(a, b).reduce(function (sum, k) { return sum + Math.min(dinnerLast(DB.dinner.days[k]).price, eatoutOf(k)); }, 0);
@@ -1262,59 +1351,62 @@ function ensureDinner() {
   save();
   return rec;
 }
+// 晩ご飯カードは毎日かならず「今日は何？」の案を出す。食べるかどうかは毎回ふたりが決める。
+// 日中のきろくは晩ご飯の判定に一切つかわない（晩ご飯として付けた記録＝e.dinner だけを見る）
 function dinnerCardHtml() {
-  var rec = ensureDinner(), s = dinnerLast(rec), L = dinnerLedger(), c = L.cur;
+  var rec = ensureDinner(), s = dinnerLast(rec), L = dinnerLedger();
   var isStore = s.kind === "store";
-  var why = isStore ? (s.rerolled ? "選び直しの結果です。今日はここで決まり！" : rec.steps.length > 1 ? "第" + rec.steps.length + "案です。ここへ行こう！" : (c.hot ? "好調のごほうび！たのしんで🎉" : "がんばったごほうび！たのしんで🌸")) : (DINNER_WHY[s.why] || DINNER_WHY.fail);
-  if (!DB.settings.showDinner) { // 外食の案は隠す。晩ご飯代のきろくだけ残す
-    return '<div class="card dn"><div class="dn-top"><span class="dn-t">🍽 今日の晩ご飯</span></div>' +
-      (dinnerRecorded({ name: "" }) ? '<button class="dn-btn" style="width:100%" disabled>きろく済み</button>' : '<button class="dn-btn pri" style="width:100%" onclick="dinnerRecordFree()">晩ご飯をきろく</button>') + "</div>";
-  }
-  var h = '<div class="card dn"><div class="dn-top"><span class="dn-t">🍽 今日の晩ご飯</span>' +
+  var got = dinnerEntries(ymd(today()));
+  var h = '<div class="card dn"><div class="dn-top"><span class="dn-t">🍽 今日の晩ご飯は？</span>' +
     '<button class="dn-info" onclick="openDinnerInfo()">外食枠 <b class="num">' + yen(L.pool) + "</b> ›</button></div>";
   h += '<div class="dn-main"><div class="dn-ic">' + (isStore ? "🍜" : "🏠") + '</div><div class="dn-tx"><div class="dn-nm">' + (isStore ? esc(s.name) : "家で食べる") +
-    (isStore ? '<span class="num dn-pr">目安' + yen(s.price) + "</span>" : "") + '</div></div></div>';
-  if (s.why === "nostore") h += '<button class="dn-btn" style="width:100%;margin-top:7px" onclick="openSettings()">🏪 お店を登録する</button>';
-  else {
-    var canReroll = isStore && !rec.rerolled && rec.steps.length === 1; // 第2案のあとは使えない（第3案は必ず家）
-    var done = isStore && dinnerRecorded(s);
-    h += '<div class="dn-acts">';
-    if (isStore) h += '<button class="dn-btn" onclick="dinnerHome()">🏠 家で食べる</button>';
-    h += '<button class="dn-btn" ' + (canReroll ? 'onclick="openDinnerReroll()"' : "disabled") + ">🔀 選び直し" + (rec.rerolled ? "（済）" : "") + "</button>";
-    if (isStore) h += done ? '<button class="dn-btn" disabled>きろく済み</button>' : '<button class="dn-btn pri" onclick="dinnerRecord()">きろく</button>';
-    h += "</div>";
+    (isStore ? '<span class="num dn-pr">目安' + yen(s.price) + "</span>" : "") + "</div>" +
+    // 準備が足りなくて仮に「家」になっている日だけ、何をすれば案が出るかを1行で
+    (!isStore && DINNER_RETRY[s.why] ? '<div class="dn-why">' + DINNER_WHY[s.why] + "</div>" : "") + "</div></div>";
+  if (got.length) { // 晩ご飯として付けた記録があるときだけ「きろく済み」。案はそのまま見せる
+    var sum = got.reduce(function (a, e) { return a + e.amount; }, 0);
+    // 1件ならその記録を、2件以上なら今日の日別シートを開いて全部見せる
+    var fixAct = got.length === 1 ? "openEntrySheet('" + got[0].id + "')" : "openDaySheet('" + ymd(today()) + "')";
+    h += '<button class="dn-done" onclick="' + fixAct + '"><span>✅ 晩ご飯 <b class="num">' + yen(sum) + "</b> きろく済み</span><span class=\"dn-fix\">なおす ›</span></button>";
+    // お店の案のまま付けたあとでも「じつは家で食べた」に直せる（直さないと外食1回に数えられる）
+    if (isStore) h += '<div class="dn-acts"><button class="dn-btn" onclick="openDinnerHome()">🏠 じつは家で食べた</button></div>';
+    return h + "</div>";
   }
+  h += '<div class="dn-acts">';
+  if (s.why === "nostore") h += '<button class="dn-btn" onclick="openSettings()">🏪 お店を登録</button>';
+  if (isStore) {
+    var canReroll = !rec.rerolled && rec.steps.length === 1; // 第2案のあとは使えない（第3案は必ず家）
+    h += '<button class="dn-btn" onclick="openDinnerHome()">🏠 家で食べる</button>';
+    h += '<button class="dn-btn" ' + (canReroll ? 'onclick="openDinnerReroll()"' : "disabled") + ">🔀 選び直し" + (rec.rerolled ? "（済）" : "") + "</button>";
+  }
+  h += '<button class="dn-btn pri" onclick="dinnerRecord()">' + (isStore ? "✍️ きろく" : "✍️ 晩ご飯をきろく") + "</button>";
+  h += "</div>";
   return h + "</div>";
 }
-function dinnerRecorded(s) {
-  return entriesOf(ymd(today())).some(function (e) { return e.dinner || e.memo === s.name; }); // 旧版はメモで見分けていた
+function dinnerEntries(dateStr) { // その日に「晩ご飯」として付けた記録だけ
+  return entriesOf(dateStr).filter(function (e) { return e.dinner === true; });
 }
-function dinnerRender() { // カードはカレンダーの下にあるので、結果が見えるよう位置を保つ
-  var y = window.scrollY;
-  render();
-  window.scrollTo(0, y);
-}
-function dinnerRecordFree() { // 案を隠している間の、晩ご飯代のきろく
-  openEntrySheet(null, ymd(today()));
-  editDinner = "外食";
-  if (DB.cats.some(function (x) { return x.id === "eatout"; })) editCatId = "eatout";
-}
-function dinnerRecord() {
+function dinnerRender() { render(); } // render() はいまの画面の位置を保つ
+function dinnerRecord() { // 案がお店ならその店の目安額を入れて、家なら空欄で、晩ご飯のきろくを開く
   var s = dinnerLast(ensureDinner());
-  if (s.kind !== "store" || dinnerRecorded(s)) return;
-  openEntrySheet(null, ymd(today()));
-  editDinner = s.name;
-  if (DB.cats.some(function (x) { return x.id === "eatout"; })) editCatId = "eatout";
-  $("fAmt").value = comma(s.price);
+  openEntrySheet(null, ymd(today()), { dinner: true, memo: s.kind === "store" ? s.name : "", amount: s.kind === "store" ? s.price : 0 });
 }
 function dinnerTried(rec) {
   return rec.steps.filter(function (x) { return x.kind === "store"; }).map(function (x) { return x.id; });
 }
+function openDinnerHome() { // 1タップで決まって戻せないので、選び直しと同じくひと呼吸おく
+  var h = "<h3>🏠 今日は家で食べる？</h3>" +
+    '<p style="font-size:.86rem;line-height:1.7;margin:0 0 12px">今日はお店の案をやめて、家で食べる日にします。<br>外食に1円も使わなかった日になり、今日はお店の案に戻せません。</p>' +
+    '<div class="sheet-actions"><button class="btn ghost" onclick="closeModal()">やめる</button><button class="btn primary" onclick="dinnerHome()">家で食べる</button></div>';
+  showModal(h);
+}
 function dinnerHome() { // 行けない＝家で食べる。外食に0円使った日と同じ扱いで、次の案は出さない
   var rec = ensureDinner(), s = dinnerLast(rec);
-  if (s.kind !== "store") return;
+  if (s.kind !== "store") { closeModal(); return; }
   rec.steps.push({ kind: "home", why: "fail" });
-  var okSave = save(); dinnerRender();
+  // お店の名前で付けていた今日の晩ご飯は、家ごはんの記録に直す（お店で食べたことにしない）
+  dinnerEntries(ymd(today())).forEach(function (e) { if (e.memo === s.name) e.memo = ""; });
+  var okSave = save(); closeModal(); dinnerRender();
   if (okSave) toast("今日は家で食べる日に決まりました🏠");
 }
 function openDinnerReroll() {
@@ -1420,37 +1512,62 @@ function deleteStore() {
 }
 
 /* ---------- 記録の追加・編集シート ---------- */
-var editEntryId = null, editDate = null, editCatId = null, editDinner = null;
-function openEntrySheet(entryId, dateStr) {
+var editEntryId = null, editDate = null, editCatId = null, editKind = "day", editMemo = "", entryBackDate = null, entryReturnTo = null;
+function cancelEntry() { closeModal(); }
+// opt（新しく付けるときだけ）= { dinner: true/false, memo: お店の名前, amount: 目安額 }
+function openEntrySheet(entryId, dateStr, opt) {
+  entryBackDate = sheetDate; // 日別シートから来たときは、終わったらその日のシートへ戻す
   editEntryId = entryId || null;
-  editDinner = null; // 晩ご飯のきろくボタンから開いたときだけ dinnerRecord が入れる
+  opt = opt || {};
   var e = null;
   if (entryId) { e = DB.entries.find(function (x) { return x.id === entryId; }); if (!e) return; }
   editDate = e ? e.date : (dateStr || ymd(today()));
   editCatId = e ? e.catId : selCatId;
-  var h = "<h3>" + (e ? "記録をなおす" : "出費を追加") + "</h3>";
+  editKind = (e ? e.dinner === true : !!opt.dinner) ? "dinner" : "day";
+  editMemo = e ? e.memo : (opt.memo || "");
+  var amt0 = e ? e.amount : (opt.amount || 0);
+  var h = "<h3>" + (e ? "記録をなおす" : editKind === "dinner" ? "晩ご飯をきろく" : "出費を追加") + "</h3>";
+  h += '<div class="segwrap kindseg" id="fKind">' + kindSegHtml() + "</div>";
+  h += '<div class="field"><label>金額</label><input type="text" id="fAmt" class="amt-input" inputmode="numeric" placeholder="0" value="' + (amt0 ? comma(amt0) : "") + '" autocomplete="off"></div>';
   h += '<div class="field"><label>日付</label><input type="date" id="fDate" value="' + editDate + '"></div>';
-  h += '<div class="field"><label>金額</label><input type="text" id="fAmt" class="amt-input" inputmode="numeric" placeholder="0" value="' + (e && e.amount ? comma(e.amount) : "") + '" autocomplete="off"></div>';
-  h += '<div class="sheet-actions"><button class="btn ghost" onclick="closeModal()">やめる</button><button class="btn primary" onclick="saveEntry()">保存</button></div>';
+  h += '<div class="sheet-actions"><button class="btn ghost" onclick="cancelEntry()">やめる</button><button class="btn primary" onclick="saveEntry()">保存</button></div>';
   if (e) h += '<button class="btn del" onclick="deleteEntry()">この記録を削除する</button>';
   showModal(h);
+  // どう閉じても（保存・やめる・外側タップ・下へ引く）、日別シートから来たならその日のシートへ戻る
+  if (entryBackDate) modalAfterClose = function () { openDaySheet(entryReturnTo || entryBackDate); };
+  entryReturnTo = null;
   var el = $("fAmt");
   el.addEventListener("input", function () { var n = parseAmt(this.value); this.value = n ? comma(n) : ""; });
+  if (!e && !amt0) { try { el.focus(); } catch (er) {} } // 新しく付けるときは、すぐ金額を打てるように
 }
+function kindSegHtml() {
+  return '<button type="button" class="' + (editKind === "day" ? "on" : "") + '" onclick="pickKind(\'day\')">☀️ 日中</button>' +
+    '<button type="button" class="' + (editKind === "dinner" ? "on" : "") + '" onclick="pickKind(\'dinner\')">🍽️ 晩ご飯</button>';
+}
+function pickKind(k) { editKind = k; $("fKind").innerHTML = kindSegHtml(); }
 function saveEntry() {
   var amt = parseAmt($("fAmt").value);
   if (!amt) { toast("金額を入れてね"); return; }
   var date = $("fDate").value;
   if (!isRealDate(date)) { toast("日付を確認してね"); return; }
+  var hasEatout = DB.cats.some(function (x) { return x.id === "eatout"; });
+  // 日中⇔晩ご飯をあとから付けかえられる。分類（catId）は晩ご飯にするときは触らない＝往復しても元の分類が残る。
+  // 新しく晩ご飯を付けるときだけ、旧版と同じ外食の分類にしておく
+  function applyKind(x, isNew) {
+    if (editKind === "dinner") { x.dinner = true; if (isNew && hasEatout) x.catId = "eatout"; }
+    else { delete x.dinner; if (x.catId === "eatout") x.catId = DB.cats.some(function (c) { return c.id === "food"; }) ? "food" : "other"; }
+  }
   if (editEntryId) {
     var e = DB.entries.find(function (x) { return x.id === editEntryId; });
-    if (e) { e.amount = amt; e.date = date; } // 分類とメモは入力欄をなくしたので、いまの値を保つ
+    // 付けかえたときだけ分類を動かす（金額や日付を直しただけの旧データの分類は触らない）
+    if (e) { e.amount = amt; e.date = date; if ((e.dinner === true) !== (editKind === "dinner")) applyKind(e); } // メモは入力欄をなくしたので、いまの値を保つ
   } else {
-    var ne = { id: uid(), date: date, amount: amt, catId: editCatId, memo: "", createdAt: new Date().toISOString() };
-    if (editDinner) { ne.dinner = true; ne.memo = editDinner; }
+    var ne = { id: uid(), date: date, amount: amt, catId: editCatId, memo: editKind === "dinner" ? editMemo : "", createdAt: new Date().toISOString() };
+    applyKind(ne, true);
     DB.entries.push(ne);
   }
-  removeZeroMark(date);
+  if (editKind !== "dinner") removeZeroMark(date); // 晩ご飯は日中の0円デーをこわさない
+  entryReturnTo = date; // 日付を変えて保存したときは、その日のシートへ戻る
   var okSave = save(); closeModal();
   if (okSave) toast("保存しました🌸");
   render();
@@ -1458,6 +1575,7 @@ function saveEntry() {
 function deleteEntry() {
   if (!confirm("この記録を削除しますか？（もとに戻せません）")) return;
   DB.entries = DB.entries.filter(function (x) { return x.id !== editEntryId; });
+  entryReturnTo = null;
   var okSave = save(); closeModal();
   if (okSave) toast("削除しました");
   render();
@@ -1480,9 +1598,14 @@ function meetPeriod() { // 現在モードの期間 {start,end,label,sub}
 function meetShift(n) {
   var p = meetPeriod();
   MEET_REF = n > 0 ? addDays(p.end, 1) : addDays(p.start, -1);
-  render();
+  render(true);
 }
-function setMeetMode(m) { MEET_MODE = m; MEET_REF = today(); render(); }
+// 切りかえても、見ていた時期のまま（今日の期間へ飛ばない）。期間の中に今日があれば今日を基準にする
+function setMeetMode(m) {
+  var p = meetPeriod(), t = today();
+  MEET_REF = diffDays(p.start, t) >= 0 && diffDays(t, p.end) >= 0 ? t : p.start;
+  MEET_MODE = m; render(true);
+}
 function viewMeet() {
   var st = DB.settings;
   var p = meetPeriod();
@@ -1542,7 +1665,7 @@ function viewMeet() {
   var d = new Date(p.start.getFullYear(), p.start.getMonth(), p.start.getDate());
   while (diffDays(d, p.end) >= 0) {
     var inf = dayInfo(ymd(d));
-    if (inf.recorded && inf.total === 0) zeroN++;
+    if (inf.recorded && inf.dayTotal === 0) zeroN++; // 晩ご飯は別あつかい＝日中に使わなかった日
     d = addDays(d, 1);
   }
   list.forEach(function (e) { if (e.dinner) eatoutN++; });
@@ -1642,15 +1765,82 @@ function openCatDetail(catId) {
 }
 
 /* ---------- モーダル ---------- */
-function showModal(bodyHtml) {
-  $("modalRoot").innerHTML = '<div class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet"><div class="grip"></div>' + bodyHtml + "</div></div>";
+// シートを開いている間は裏の画面を止める（指でなぞっても裏のカレンダーが動かない）
+var bodyLockY = null;
+function lockBody() {
+  if (bodyLockY !== null) return;
+  bodyLockY = window.scrollY;
+  document.body.style.top = -bodyLockY + "px";
+  document.body.classList.add("locked");
 }
+function unlockBody() {
+  if (bodyLockY === null) return;
+  var y = bodyLockY; bodyLockY = null;
+  document.body.classList.remove("locked");
+  document.body.style.top = "";
+  window.scrollTo(0, y);
+}
+// キーボードが出たら、シートの置き場を「見えている範囲」に合わせる（保存ボタンが隠れない）
+function fitViewport() {
+  var vv = window.visualViewport, r = document.documentElement.style;
+  if (!vv) return;
+  r.setProperty("--vvh", vv.height + "px");
+  r.setProperty("--vvt", vv.offsetTop + "px");
+}
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", fitViewport);
+  window.visualViewport.addEventListener("scroll", fitViewport);
+}
+function showModal(bodyHtml) {
+  modalAfterClose = null;
+  $("modalRoot").innerHTML = '<div class="modal" onclick="if(event.target===this)closeModal()"><div class="sheet"><div class="grip"></div>' + bodyHtml + "</div></div>";
+  lockBody(); fitViewport();
+  wireSheetDrag($("modalRoot").querySelector(".sheet"));
+}
+// シートを下へ引くと閉じる（いちばん上までスクロールしているときだけ。入力中の操作はじゃましない）
+function wireSheetDrag(sh) {
+  if (!sh) return;
+  var y0 = null, dy = 0, live = false;
+  sh.addEventListener("touchstart", function (ev) {
+    if (ev.touches.length !== 1 || /^(INPUT|TEXTAREA|SELECT)$/.test(ev.target.tagName)) { y0 = null; return; }
+    y0 = ev.touches[0].clientY; dy = 0; live = false;
+  }, { passive: true });
+  sh.addEventListener("touchmove", function (ev) {
+    if (y0 === null) return;
+    dy = ev.touches[0].clientY - y0;
+    if (!live && (dy <= 6 || sh.scrollTop > 0)) { if (dy < 0 || sh.scrollTop > 0) y0 = null; return; }
+    live = true;
+    if (ev.cancelable) ev.preventDefault(); // シートが引かれている間は、中身や裏の画面をスクロールさせない
+    sh.classList.add("dragging");
+    sh.style.transform = "translateY(" + Math.max(0, dy) + "px)";
+  }, { passive: false });
+  sh.addEventListener("touchcancel", function () { // 通知や着信でタッチが取り消されたら、閉じずに元の位置へ
+    sh.classList.remove("dragging"); sh.style.transform = ""; y0 = null; live = false;
+  });
+  sh.addEventListener("touchend", function () {
+    if (!live) { y0 = null; return; }
+    sh.classList.remove("dragging"); sh.classList.add("closing");
+    if (dy > 90) { sh.style.transform = "translateY(100%)"; setTimeout(function () { if (sh.isConnected) closeModal(); }, 180); }
+    else { sh.style.transform = ""; setTimeout(function () { sh.classList.remove("closing"); }, 220); }
+    y0 = null; live = false;
+  });
+}
+var modalAfterClose = null; // 閉じたあとに戻るシート（記録シート→日別シート）
 function closeModal() {
   document.activeElement && document.activeElement.blur();
   $("modalRoot").innerHTML = "";
   sheetDate = null;
+  var after = modalAfterClose; modalAfterClose = null;
   // シートを開いたまま日付が変わっていたら、閉じたときに今日の表示へ
   if (ymd(today()) !== lastDay) { lastDay = ymd(today()); render(); }
+  if (after) { // 次のシートを開くので、裏の画面の固定はそのまま
+    after();
+    // 「保存」の2度押しが、戻ってきたシートの同じ場所のボタン（給与日など）に当たらないよう、少しだけ押せなくする
+    var ns = $("modalRoot").querySelector(".sheet");
+    if (ns) { ns.style.pointerEvents = "none"; setTimeout(function () { ns.style.pointerEvents = ""; }, 400); }
+    return;
+  }
+  unlockBody();
 }
 
 /* ---------- ☰メニュー ---------- */
@@ -1749,7 +1939,7 @@ function openCalSheet() {
 }
 
 /* ---------- 設定 ---------- */
-function openSettings() { renderSettings(true); $("setScrim").classList.add("show"); $("setPage").classList.add("show"); closeModal(); }
+function openSettings() { renderSettings(true); $("setPage").scrollTop = 0; $("setScrim").classList.add("show"); $("setPage").classList.add("show"); closeModal(); }
 function closeSettingsPage() { $("setScrim").classList.remove("show"); $("setPage").classList.remove("show"); render(); }
 // 「もどる」やスクリムで閉じても、入力ずみの有効な変更は捨てずに保存する
 function applySettings(fromClose) {
@@ -1768,7 +1958,6 @@ function applySettings(fromClose) {
   st.eatoutRates = ["sRate0", "sRate1", "sRate2"].map(function (id, i) { return Math.min(100, numOr(id, st.eatoutRates[i])); });
   st.eatoutPerWeek = [numOr("sWk0", st.eatoutPerWeek[0]), numOr("sWk1", st.eatoutPerWeek[1])];
   if (/^\d{2}:\d{2}$/.test($("sTime").value)) st.dinnerTime = $("sTime").value;
-  if ($("sShowDinner")) st.showDinner = $("sShowDinner").classList.contains("on");
   if (validT) st.thresholds = [t0, t1, t2];
   else if (fromClose) toast("しきい値は順序が正しくないため元のままにしました");
   applySettings.lastSaveOk = save();
@@ -1789,7 +1978,6 @@ function renderSettings(fresh) {
   h += "</div>";
 
   h += '<h2 class="sec">🍽 今日の晩ご飯</h2><div class="card">';
-  h += '<div class="switch' + (st.showDinner ? " on" : "") + '" id="sShowDinner" onclick="this.classList.toggle(\'on\')"><div class="track"><div class="knob"></div></div><div class="lbl">外食の案を見せる<small>OFFだと、お店の案は出しません（晩ご飯代のきろくだけ残ります）</small></div></div>';
   h += storeRowsHtml();
   h += '<button class="add-dash" onclick="openStoreSheet(null)">＋ お店を追加</button>';
   h += '<div class="set-row" style="margin-top:6px"><div class="lbl">家ごはん1食の金額</div><input class="mini" type="text" inputmode="numeric" id="sHome" value="' + comma(st.homeMealCost) + '"></div>';
@@ -1887,8 +2075,8 @@ function deleteCat() {
 }
 
 /* ---------- データ（保存・引っこし） ---------- */
-function openData() { renderData(); $("dataScrim").classList.add("show"); $("dataPage").classList.add("show"); }
-function closeData() { $("dataScrim").classList.remove("show"); $("dataPage").classList.remove("show"); }
+function openData() { renderData(); $("dataPage").scrollTop = 0; $("dataScrim").classList.add("show"); $("dataPage").classList.add("show"); }
+function closeData() { $("dataScrim").classList.remove("show"); $("dataPage").classList.remove("show"); render(); } // 書き出したら「控えを取って」のお知らせを消す
 function renderData() {
   var h = '<div class="card"><p class="muted" style="margin:0 0 10px">記録はぜんぶこのiPhoneの中だけにあります。ときどき「書き出す」でバックアップを取っておくと安心です（LINEのKeepメモなどに貼っておけばOK）。</p>' +
     '<button class="btn primary" onclick="exportData()">📋 書き出す（コピー）</button></div>';
@@ -1997,7 +2185,7 @@ function wipeData() {
 }
 
 /* ---------- つかいかた ---------- */
-function openHelp() { renderHelp(); $("helpScrim").classList.add("show"); $("helpPage").classList.add("show"); }
+function openHelp() { renderHelp(); $("helpPage").scrollTop = 0; $("helpScrim").classList.add("show"); $("helpPage").classList.add("show"); }
 function closeHelp() { $("helpScrim").classList.remove("show"); $("helpPage").classList.remove("show"); }
 function renderHelp() {
   var st = DB.settings;
@@ -2017,14 +2205,17 @@ function renderHelp() {
     "<p>日付をタップすると、その日のきろくを見たり、あとから直したりできます。💳は締め日、🍚は週のスタート、💴は給与日の目じるしです。</p>" +
     "<p>給与日が前にずれた月は、その日をタップして「この日を給与日にする」を押すと、そこから1週間ごとに組み直します。iPhoneカレンダーへ登録した通知は自動では動かないので、登録し直してください。</p></div>" +
     '<div class="card"><h3 style="margin-top:0">🍽 今日の晩ご飯</h3>' +
-    "<p>カレンダーの下の「晩ご飯をきろく」で、晩ご飯の金額を日中と分けて残せます。設定で「外食の案を見せる」をONにすると、お店の案も出ます。週のペースを守ると外食のごほうびが出て、続けて達成すると大きめのお店も出ます。</p>" +
-    "<p>案が出ているときにお店へ行けないなら「家で食べる」を押すと、外食に1円も使わなかった日になります。「選び直し」は1日1回、今のお店より安いお店から選び直します。</p>" +
+    "<p>カレンダーの下に、毎日「今日の晩ご飯は？」の案が出ます（お店か、家で食べるか）。食べるかどうかは、そのつどふたりで決めてOK。週のペースを守ると外食のごほうびが出て、続けて達成すると大きめのお店も出ます。</p>" +
+    "<p>食べたら「きろく」で晩ご飯の金額を日中と分けて残せます（日中のきろくは晩ご飯とは別あつかいです）。お店へ行かないなら「家で食べる」を押すと、外食に1円も使わなかった日になります。「選び直し」は1日1回、今のお店より安いお店から選び直します。</p>" +
+    "<p>まちがえて日中と晩ご飯を逆に付けたときは、その記録をタップして「☀️ 日中／🍽️ 晩ご飯」を付けかえてください。</p>" +
     "<p>浮いた予算の一部は外食枠に貯まり、のこりは貯金にまわります。お店は設定から登録できます。</p></div>" +
     '<div class="card"><h3 style="margin-top:0">📊 ふたり会議</h3>' +
     "<p>クレカの締め（" + ((st.cardCloseDay % 31) + 1) + "日〜" + st.cardCloseDay + "日）ごと・週ごと・月ごとに、日中と晩ご飯の使いみちをふりかえられます。</p></div>";
 }
 
 /* ---------- 初期化 ---------- */
+// iPhoneのSafariは、タッチの受け口がひとつも無いページでは「押している間」の見た目（:active）を出さない
+document.addEventListener("touchstart", function () {}, { passive: true });
 $("menuBtn").addEventListener("click", openMenu);
 $("setBack").addEventListener("click", closeSettings);
 $("setScrim").addEventListener("click", closeSettings);
